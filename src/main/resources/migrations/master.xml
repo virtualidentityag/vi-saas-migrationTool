@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
+  <include file="migrations/changeset/0001_setup_keycloak_roles/0001_setup_keycloak_roles.xml"/>
+  <include file="migrations/changeset/0002_setup_rocketchat_delete_message_config/0002_setup_rocketchat_delete_message_config.xml"/>
+</databaseChangeLog>

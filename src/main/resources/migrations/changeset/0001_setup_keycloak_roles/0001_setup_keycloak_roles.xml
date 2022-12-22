@@ -1,0 +1,12 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+  <changeSet author="aalicic" id="setup_leycloak_roles">
+    <customChange class="com.vi.migrationtool.keycloak.KeycloakCreateRoleTask">
+      <param name="roleName" value="restricted-agency-admin" />
+    </customChange>
+  </changeSet>
+
+</databaseChangeLog>
