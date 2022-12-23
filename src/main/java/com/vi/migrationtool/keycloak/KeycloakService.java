@@ -1,14 +1,18 @@
 package com.vi.migrationtool.keycloak;
 
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -25,7 +29,22 @@ public class KeycloakService {
     HttpEntity entity = new HttpEntity<>(getCreateRoleBody(roleName), httpHeaders);
     var createRoleUrl =
         keycloakConfig.getAuthServerUrl() + "/admin/realms/" + keycloakConfig.getRealm() + "/roles";
-    new RestTemplate().postForEntity(createRoleUrl, entity, Void.class);
+    var restTemplate = new RestTemplate();
+    ResponseErrorHandler errorHandler =
+        new ResponseErrorHandler() {
+          @Override
+          public boolean hasError(ClientHttpResponse response) throws IOException {
+            if (response.getStatusCode().equals(HttpStatus.CONFLICT)) {
+              return false;
+            }
+            return true;
+          }
+
+          @Override
+          public void handleError(ClientHttpResponse response) throws IOException {}
+        };
+    restTemplate.setErrorHandler(errorHandler);
+    restTemplate.postForEntity(createRoleUrl, entity, Void.class);
   }
 
   public KeycloakLoginResponseDTO loginAdminUser() {
