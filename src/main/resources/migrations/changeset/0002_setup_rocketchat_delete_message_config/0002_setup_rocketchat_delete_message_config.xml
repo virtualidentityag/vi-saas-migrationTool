@@ -7,7 +7,7 @@
     <customChange class="com.vi.migrationtool.rocketchat.RocketChatConfigurationUpdateTask">
       <param name="rocketChatMethod" value='saveSettings'/>
       <param name="rocketChatRequest"
-        value='{"message":"{\"method\":\"saveSettings\",\"id\":\"\",\"params\":[[{\"_id\":\"Message_ShowDeletedStatus\",\"value\":true}]]}"}'/>
+        value='{"message":"{\"msg\":\"method\",\"id\":\"\",\"method\":\"saveSettings\",\"params\":[[{\"_id\":\"Message_ShowDeletedStatus\",\"value\":true}]]}"}'/>
     </customChange>
   </changeSet>
 
