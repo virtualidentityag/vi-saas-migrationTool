@@ -49,6 +49,8 @@
 		<json-smart.version>2.4.7</json-smart.version>
 		<spring-context-support.version>5.3.23</spring-context-support.version>
 		<ehcache.version>2.10.9.2</ehcache.version>
+		<spring-boot-starter-data-mongodb.version>2.7.5</spring-boot-starter-data-mongodb.version>
+		<spring-data-mongodb.version>3.3.5</spring-data-mongodb.version>
 	</properties>
 
 	<dependencies>
@@ -217,7 +219,18 @@
 			<version>4.8.0</version>
 		</dependency>
 
+		<!-- mongo dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+			<version>${spring-boot-starter-data-mongodb.version}</version>
+		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-mongodb</artifactId>
+			<version>${spring-data-mongodb.version}</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client -->
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
@@ -433,6 +446,60 @@
 				<configuration>
 					<propertyFile>src/main/resources/liquibase.properties</propertyFile>
 				</configuration>
+			</plugin>
+
+			<!-- json-schema.org pojo generation -->
+			<plugin>
+				<groupId>org.jsonschema2pojo</groupId>
+				<artifactId>jsonschema2pojo-maven-plugin</artifactId>
+				<version>0.4.34</version>
+				<configuration>
+					<sourceDirectory>${basedir}/src/main/resources/schemas</sourceDirectory>
+					<outputDirectory>target/generated-sources</outputDirectory>
+					<targetPackage>com.vi.migrationtool.schemas.model</targetPackage>
+					<useCommonsLang3>true</useCommonsLang3>
+					<generateBuilders>true</generateBuilders>
+					<includeAdditionalProperties>true</includeAdditionalProperties>
+					<includeConstructors>true</includeConstructors>
+					<initializeCollections>true</initializeCollections>
+					<removeOldOutput>true</removeOldOutput>
+					<annotationStyle>jackson2</annotationStyle>
+					<includeAdditionalProperties>false</includeAdditionalProperties>
+					<initializeCollections>true</initializeCollections>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Code style check -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>3.1.1</version>
+				<executions>
+					<execution>
+						<id>validate</id>
+						<phase>validate</phase>
+						<configuration>
+							<configLocation>google_checks_light.xml</configLocation>
+							<encoding>UTF-8</encoding>
+							<failsOnError>false</failsOnError>
+							<consoleOutput>true</consoleOutput>
+							<failOnViolation>false</failOnViolation>
+							<logViolationsToConsole>true</logViolationsToConsole>
+							<violationSeverity>warning</violationSeverity>
+							<includeTestSourceDirectory>true</includeTestSourceDirectory>
+						</configuration>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<!-- Code style check -->
 			<plugin>
