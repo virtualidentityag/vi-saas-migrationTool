@@ -1,9 +1,8 @@
 package com.vi.migrationtool.mongodb.service;
 
-import java.util.List;
-
 import com.vi.migrationtool.mongodb.model.ApplicationSettingsEntity;
 import com.vi.migrationtool.mongodb.repository.ApplicationSettingsRepository;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
