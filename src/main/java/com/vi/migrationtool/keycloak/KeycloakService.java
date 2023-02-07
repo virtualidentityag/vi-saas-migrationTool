@@ -134,6 +134,42 @@ public class KeycloakService {
     return List.of(response.getBody());
   }
 
+  public List<KeycloakUser> getUsersWithRoleName(final String roleName) {
+    var httpHeaders = new HttpHeaders();
+    httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+    KeycloakLoginResponseDTO loginResponse = loginAdminUser();
+    httpHeaders.setBearerAuth(loginResponse.getAccessToken());
+    return getUsersWithRoleName(roleName, httpHeaders);
+  }
+
+  private List<KeycloakUser> getUsersWithRoleName(
+      final String roleName, final HttpHeaders httpHeaders) {
+
+    // https://develop.onlineberatung.net/authauth/admin/realms/online-beratung/roles/single-tenant-admin/users?first=0&max=5
+    // https://develop.onlineberatung.net/auth/admin/realms/online-beratung/roles/single-tenant-admin/users?first=0&max=5
+
+    var url =
+        keycloakConfig.getAuthServerUrl()
+            + "/admin/realms/online-beratung/roles/"
+            + roleName
+            + "/users?first=0&max=5";
+    var getUsersBySearchTermURL = getUrl(url);
+
+    HttpEntity requestEntity = new HttpEntity<>(httpHeaders);
+    var restTemplate = new RestTemplate();
+    ResponseEntity<KeycloakUser[]> response =
+        restTemplate.exchange(
+            getUsersBySearchTermURL,
+            HttpMethod.GET,
+            requestEntity,
+            KeycloakUser[].class,
+            new Object[] {});
+    if (isNull(response.getBody())) {
+      log.warn("No user found in keycloak using search param {}", getUsersBySearchTermURL);
+    }
+    return List.of(response.getBody());
+  }
+
   private Optional<RoleRepresentation> getRoleBy(
       final String roleName, final HttpHeaders httpHeaders) {
 
@@ -161,6 +197,10 @@ public class KeycloakService {
     return Arrays.stream(response.getBody())
         .filter(role -> role.getName().equals(roleName))
         .findFirst();
+  }
+
+  private String getUrl(String url) {
+    return UriComponentsBuilder.fromHttpUrl(url).encode().toUriString();
   }
 
   private String urlWithSearchParam(String url) {
