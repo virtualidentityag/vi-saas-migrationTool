@@ -6,7 +6,11 @@ import com.vi.migrationtool.keycloak.KeycloakService;
 import com.vi.migrationtool.keycloak.KeycloakUser;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import liquibase.database.Database;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +32,10 @@ public class UserServiceAddAdminTask extends MigrationTasks {
     List<KeycloakUser> adminUsersWithRoleName = keycloakService.getUsersWithRoleName(roleName);
     log.info("Found users with role name of size: {}", adminUsersWithRoleName.size());
     JdbcTemplate jdbcTemplate = BeanAwareSpringLiquibase.getBean(JdbcTemplate.class);
+    createTenantAdminUsersIfNotExist(adminUsersWithRoleName, jdbcTemplate);
+  }
 
-
+  private void createTenantAdminUsersIfNotExist(List<KeycloakUser> adminUsersWithRoleName, JdbcTemplate jdbcTemplate) {
     adminUsersWithRoleName.stream().filter(keycloakUser -> doesNotExistInDB(jdbcTemplate, keycloakUser.getId())).forEach(this::createAdminUserInDB);
   }
 
@@ -40,7 +46,7 @@ public class UserServiceAddAdminTask extends MigrationTasks {
         new RowMapper<Object>() {
           @Override
           public Object mapRow(ResultSet resultSet, int i) throws SQLException {
-            return resultSet.getString("user_id");
+            return resultSet.getString("admin_id");
           }
         });
 
@@ -50,15 +56,21 @@ public class UserServiceAddAdminTask extends MigrationTasks {
   private void createAdminUserInDB(KeycloakUser keycloakUser) {
     log.info("Creating admin user in DB: {}", keycloakUser.getId());
     JdbcTemplate jdbcTemplate = BeanAwareSpringLiquibase.getBean(JdbcTemplate.class);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    var formattedDate = LocalDateTime.now().format(formatter);
+    Map<String, Object> attributes = (Map<String, Object>) keycloakUser.getAttributes();
+    String tenantId = (String) ((ArrayList) attributes.get("tenantId")).get(0);
     jdbcTemplate.update(
         "INSERT INTO `admin` (`admin_id`, `tenant_id`, `username`, `first_name`, `last_name`, `email`, `type`, `rc_user_id`, `id_old`, `create_date`, `update_date`) VALUES\n"
-            + "(?,?,?,?,?,?,'TENANT',NULL,NULL,'2023-01-16 10:17:37','2023-01-18 08:33:37')",
+            + "(?,?,?,?,?,?,'TENANT',NULL,NULL,?,?)",
         keycloakUser.getId(),
-        keycloakUser.getTenantId(),
+        attributes != null ? Long.valueOf(tenantId) : null,
         keycloakUser.getUsername(),
         keycloakUser.getFirstName(),
         keycloakUser.getLastName(),
-        keycloakUser.getEmail()
+        keycloakUser.getEmail() == null ? "" : keycloakUser.getEmail(),
+        formattedDate,
+        formattedDate
     );
   }
 

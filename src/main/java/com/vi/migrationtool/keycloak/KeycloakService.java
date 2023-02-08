@@ -145,9 +145,6 @@ public class KeycloakService {
   private List<KeycloakUser> getUsersWithRoleName(
       final String roleName, final HttpHeaders httpHeaders) {
 
-    // https://develop.onlineberatung.net/authauth/admin/realms/online-beratung/roles/single-tenant-admin/users?first=0&max=5
-    // https://develop.onlineberatung.net/auth/admin/realms/online-beratung/roles/single-tenant-admin/users?first=0&max=5
-
     var url =
         keycloakConfig.getAuthServerUrl()
             + "/admin/realms/online-beratung/roles/"
