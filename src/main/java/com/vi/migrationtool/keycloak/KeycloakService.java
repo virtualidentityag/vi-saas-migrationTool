@@ -36,7 +36,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class KeycloakService {
 
   private static final String SEARCH_PARAM = "search";
-  public static final String MAX_USERS_TO_MIGRATE = "100";
+  private static final String MAX_USERS_TO_MIGRATE = "100";
   private final KeycloakConfig keycloakConfig;
 
   public void createRole(String roleName) {
