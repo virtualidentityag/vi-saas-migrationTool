@@ -2,9 +2,6 @@ package com.vi.migrationtool.keycloak;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,6 +28,4 @@ public class KeycloakUser implements Serializable {
 
   @JsonProperty("attributes")
   private Object attributes;
-
-
 }

@@ -35,20 +35,26 @@ public class UserServiceAddAdminTask extends MigrationTasks {
     createTenantAdminUsersIfNotExist(adminUsersWithRoleName, jdbcTemplate);
   }
 
-  private void createTenantAdminUsersIfNotExist(List<KeycloakUser> adminUsersWithRoleName, JdbcTemplate jdbcTemplate) {
-    adminUsersWithRoleName.stream().filter(keycloakUser -> doesNotExistInDB(jdbcTemplate, keycloakUser.getId())).forEach(this::createAdminUserInDB);
+  private void createTenantAdminUsersIfNotExist(
+      List<KeycloakUser> adminUsersWithRoleName, JdbcTemplate jdbcTemplate) {
+    adminUsersWithRoleName.stream()
+        .filter(keycloakUser -> doesNotExistInDB(jdbcTemplate, keycloakUser.getId()))
+        .forEach(this::createAdminUserInDB);
   }
 
   private boolean doesNotExistInDB(JdbcTemplate jdbcTemplate, String id) {
     String sql = "SELECT * FROM admin WHERE admin_id = ?";
 
-    var result = jdbcTemplate.query(sql, new Object[]{id},
-        new RowMapper<Object>() {
-          @Override
-          public Object mapRow(ResultSet resultSet, int i) throws SQLException {
-            return resultSet.getString("admin_id");
-          }
-        });
+    var result =
+        jdbcTemplate.query(
+            sql,
+            new Object[] {id},
+            new RowMapper<Object>() {
+              @Override
+              public Object mapRow(ResultSet resultSet, int i) throws SQLException {
+                return resultSet.getString("admin_id");
+              }
+            });
 
     return result == null || result.isEmpty();
   }
@@ -70,8 +76,6 @@ public class UserServiceAddAdminTask extends MigrationTasks {
         keycloakUser.getLastName(),
         keycloakUser.getEmail() == null ? "" : keycloakUser.getEmail(),
         formattedDate,
-        formattedDate
-    );
+        formattedDate);
   }
-
 }
