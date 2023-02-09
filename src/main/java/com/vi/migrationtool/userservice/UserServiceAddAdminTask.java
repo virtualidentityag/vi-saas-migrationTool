@@ -4,8 +4,6 @@ import com.vi.migrationtool.common.MigrationTasks;
 import com.vi.migrationtool.config.BeanAwareSpringLiquibase;
 import com.vi.migrationtool.keycloak.KeycloakService;
 import com.vi.migrationtool.keycloak.KeycloakUser;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -49,12 +47,7 @@ public class UserServiceAddAdminTask extends MigrationTasks {
         jdbcTemplate.query(
             sql,
             new Object[] {id},
-            new RowMapper<Object>() {
-              @Override
-              public Object mapRow(ResultSet resultSet, int i) throws SQLException {
-                return resultSet.getString("admin_id");
-              }
-            });
+            (RowMapper<Object>) (resultSet, i) -> resultSet.getString("admin_id"));
 
     return result == null || result.isEmpty();
   }
@@ -64,18 +57,30 @@ public class UserServiceAddAdminTask extends MigrationTasks {
     JdbcTemplate jdbcTemplate = BeanAwareSpringLiquibase.getBean(JdbcTemplate.class);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     var formattedDate = LocalDateTime.now().format(formatter);
-    Map<String, Object> attributes = (Map<String, Object>) keycloakUser.getAttributes();
-    String tenantId = (String) ((ArrayList) attributes.get("tenantId")).get(0);
+    executeInsertQuery(keycloakUser, jdbcTemplate, formattedDate);
+    log.info("Adming user created in DB: {}", keycloakUser.getId());
+  }
+
+  private void executeInsertQuery(
+      KeycloakUser keycloakUser, JdbcTemplate jdbcTemplate, String formattedDate) {
     jdbcTemplate.update(
         "INSERT INTO `admin` (`admin_id`, `tenant_id`, `username`, `first_name`, `last_name`, `email`, `type`, `rc_user_id`, `id_old`, `create_date`, `update_date`) VALUES\n"
-            + "(?,?,?,?,?,?,'TENANT',NULL,NULL,?,?)",
+            + "(?,?,?,?,?,?,?,NULL,NULL,?,?)",
         keycloakUser.getId(),
-        attributes != null ? Long.valueOf(tenantId) : null,
+        keycloakUser.getAttributes() != null ? extractTenantId(keycloakUser) : null,
         keycloakUser.getUsername(),
         keycloakUser.getFirstName(),
         keycloakUser.getLastName(),
         keycloakUser.getEmail() == null ? "" : keycloakUser.getEmail(),
+        adminType,
         formattedDate,
         formattedDate);
+  }
+
+  private Long extractTenantId(KeycloakUser keycloakUser) {
+    log.info("Trying to extract tenant id for a given keycloak user");
+    Map<String, Object> attributes = (Map<String, Object>) keycloakUser.getAttributes();
+    String tenantId = (String) ((ArrayList) attributes.get("tenantId")).get(0);
+    return Long.valueOf(tenantId);
   }
 }
