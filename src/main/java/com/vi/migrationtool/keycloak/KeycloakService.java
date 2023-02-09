@@ -36,6 +36,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class KeycloakService {
 
   private static final String SEARCH_PARAM = "search";
+  public static final String MAX_USERS_TO_MIGRATE = "100";
   private final KeycloakConfig keycloakConfig;
 
   public void createRole(String roleName) {
@@ -149,7 +150,7 @@ public class KeycloakService {
         keycloakConfig.getAuthServerUrl()
             + "/admin/realms/online-beratung/roles/"
             + roleName
-            + "/users?first=0&max=5";
+            + "/users?first=0&max=" + MAX_USERS_TO_MIGRATE;
     var getUsersBySearchTermURL = getUrl(url);
 
     HttpEntity requestEntity = new HttpEntity<>(httpHeaders);
