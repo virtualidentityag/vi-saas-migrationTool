@@ -9,4 +9,5 @@
   <include file="migrations/changeset/0003_add_tenant_can_edit_legaltexts_applevel_setting/0003_add_tenant_can_edit_legaltexts_applevel_setting.xml"/>
   <include file="migrations/changeset/0004_add_topic_admin_role_to_super_admin_user/0004_add_topic_admin_role_to_super_admin_user.xml"/>
   <include file="migrations/changeset/0005_add_permission_to_technical_role_rocketchat/0005_add_permission_to_technical_role_rocketchat.xml"/>
+  <include file="migrations/changeset/0006_create_admin_user_table_entries_for_existing_admins/0006_create_admin_user_table_entries_for_existing_admins.xml"/>
 </databaseChangeLog>

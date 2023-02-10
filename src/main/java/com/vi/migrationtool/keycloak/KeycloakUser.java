@@ -16,4 +16,16 @@ public class KeycloakUser implements Serializable {
 
   @JsonProperty("username")
   private String username;
+
+  @JsonProperty("email")
+  private String email;
+
+  @JsonProperty("firstName")
+  private String firstName;
+
+  @JsonProperty("lastName")
+  private String lastName;
+
+  @JsonProperty("attributes")
+  private Object attributes;
 }
