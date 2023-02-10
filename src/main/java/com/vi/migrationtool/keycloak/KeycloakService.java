@@ -150,7 +150,8 @@ public class KeycloakService {
         keycloakConfig.getAuthServerUrl()
             + "/admin/realms/online-beratung/roles/"
             + roleName
-            + "/users?first=0&max=" + MAX_USERS_TO_MIGRATE;
+            + "/users?first=0&max="
+            + MAX_USERS_TO_MIGRATE;
     var getUsersBySearchTermURL = getUrl(url);
 
     HttpEntity requestEntity = new HttpEntity<>(httpHeaders);
