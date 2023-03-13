@@ -16,7 +16,7 @@ public class DropLockedAgenciesAndSaveDataAtrribute extends MigrationTasks {
     private void executeRemovalQuery(
              JdbcTemplate jdbcTemplate) {
         jdbcTemplate.update(
-                "ALTER TABLE consutlingtypeservice DROP `lockedAgencies` DROP `sendSaveSessionDataMessage`");
+                "ALTER TABLE consultingtypeservice DROP `lockedAgencies` DROP `sendSaveSessionDataMessage`");
     }
 
     @Override
