@@ -223,11 +223,6 @@
       "type": "boolean",
       "default": false
     },
-    "lockedAgencies": {
-      "description": "If true, no agency with this consulting type can be deleted or set offline via the admin api",
-      "type": "boolean",
-      "default": false
-    },
     "whiteSpot": {
       "description": "Behavior regarding the white spots agencies",
       "type": "object",
@@ -295,11 +290,6 @@
     },
     "sendFurtherStepsMessage": {
       "description": "Indicates whether if the system should send an automatic further steps message to all enquiries for this consulting type or not",
-      "type": "boolean",
-      "default": true
-    },
-    "sendSaveSessionDataMessage": {
-      "description": "Indicates whether if the system should send an automatic message with a prompt for the user to enter optional information to the session",
       "type": "boolean",
       "default": true
     },

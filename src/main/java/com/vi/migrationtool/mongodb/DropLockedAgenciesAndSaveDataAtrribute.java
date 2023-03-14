@@ -38,8 +38,6 @@ public class DropLockedAgenciesAndSaveDataAtrribute extends MigrationTasks {
 
   private void applyMigration(
       ConsultingTypeEntity consultingTypeEntity, ConsultingTypeService consultingTypeService) {
-    consultingTypeEntity.setLockedAgencies(null);
-    consultingTypeEntity.setSendSaveSessionDataMessage(null);
     consultingTypeService.updateConsultingType(consultingTypeEntity);
   }
 }
