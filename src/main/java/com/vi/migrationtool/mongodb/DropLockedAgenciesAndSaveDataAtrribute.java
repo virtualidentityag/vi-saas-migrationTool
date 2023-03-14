@@ -32,7 +32,7 @@ public class DropLockedAgenciesAndSaveDataAtrribute extends MigrationTasks {
               (consultingTypeEntity) ->
                   applyMigration(consultingTypeEntity, consultingTypeService));
     } else {
-      log.info("Skipping migration as consulting type entities are null");
+      log.info("Skipping migration as consulting type entities are nulls");
     }
   }
 
