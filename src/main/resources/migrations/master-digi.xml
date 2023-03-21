@@ -10,4 +10,7 @@
   <include file="migrations/changeset/0004_add_topic_admin_role_to_super_admin_user/0004_add_topic_admin_role_to_super_admin_user.xml"/>
   <include file="migrations/changeset/0005_add_permission_to_technical_role_rocketchat/0005_add_permission_to_technical_role_rocketchat.xml"/>
   <include file="migrations/changeset/0006_create_admin_user_table_entries_for_existing_admins/0006_create_admin_user_table_entries_for_existing_admins.xml"/>
+  <include file="migrations/changeset/0007_add_view_room_permission_to_technical_role_rocketchat/0007_add_view_room_permission_to_technical_role_rocketchat.xml"/>
+  <include file="migrations/changeset/0008_remove_lockedAgencies/0008_remove_lockedAgencies_attribute.xml"/>
+  <include file="migrations/changeset/0009_add_documentation_enabled_applevel_setting/0009_add_documentation_enabled_applevel_setting.xml"/>
 </databaseChangeLog>
