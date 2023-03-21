@@ -37,12 +37,10 @@ public class AddDocumentationEnabledApplevelSettingMigrationTask extends Migrati
   private void applyMigration(
       ApplicationSettingService applicationSettingService,
       ApplicationSettingsEntity applicationSettingsEntity) {
-    DocumentationEnabled documentationEnabled =
-        new DocumentationEnabled();
+    DocumentationEnabled documentationEnabled = new DocumentationEnabled();
     documentationEnabled.setValue(initialValue);
     documentationEnabled.setReadOnly(readOnly);
-    applicationSettingsEntity.setDocumentationEnabled(
-        documentationEnabled);
+    applicationSettingsEntity.setDocumentationEnabled(documentationEnabled);
     applicationSettingService.updateApplicationSettings(applicationSettingsEntity);
     log.info(
         "Applied migration to add documentationEnabled with default settings: value {}, readOnly: {}",
@@ -54,10 +52,8 @@ public class AddDocumentationEnabledApplevelSettingMigrationTask extends Migrati
     return !documentationToggleExists(applicationSettingsEntity);
   }
 
-  private boolean documentationToggleExists(
-      ApplicationSettingsEntity applicationSettingsEntity) {
+  private boolean documentationToggleExists(ApplicationSettingsEntity applicationSettingsEntity) {
     return applicationSettingsEntity.getDocumentationEnabled() != null
-        && applicationSettingsEntity.getDocumentationEnabled().getValue()
-            != null;
+        && applicationSettingsEntity.getDocumentationEnabled().getValue() != null;
   }
 }
