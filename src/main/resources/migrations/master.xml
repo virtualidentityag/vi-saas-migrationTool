@@ -13,4 +13,5 @@
   <include file="migrations/changeset/0007_add_view_room_permission_to_technical_role_rocketchat/0007_add_view_room_permission_to_technical_role_rocketchat.xml"/>
   <include file="migrations/changeset/0008_remove_lockedAgencies/0008_remove_lockedAgencies_attribute.xml"/>
   <include file="migrations/changeset/0009_add_documentation_enabled_applevel_setting/0009_add_documentation_enabled_applevel_setting.xml"/>
+  <include file="migrations/changeset/0010_add_notification_and_tenant_creation_release_toggles/0010_add_notification_and_tenant_creation_release_toggles.xml"/>
 </databaseChangeLog>
