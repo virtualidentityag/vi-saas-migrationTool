@@ -15,4 +15,5 @@
   <include file="migrations/changeset/0009_add_documentation_enabled_applevel_setting/0009_add_documentation_enabled_applevel_setting.xml"/>
   <include file="migrations/changeset/0010_add_notification_and_tenant_creation_release_toggles/0010_add_notification_and_tenant_creation_release_toggles.xml"/>
   <include file="migrations/changeset/0011_add_notification_technical_keycloak_role/0011_add_notification_technical_keycloak_role.xml"/>
+  <include file="migrations/changeset/0012_setup_rocketchat_read_receipts/0012_setup_rocketchat_read_receipts.xml"/>
 </databaseChangeLog>
