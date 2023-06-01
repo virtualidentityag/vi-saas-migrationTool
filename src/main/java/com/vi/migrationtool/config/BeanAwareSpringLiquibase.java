@@ -17,11 +17,13 @@ public class BeanAwareSpringLiquibase extends SpringLiquibase {
       return null;
     }
   }
+
   public static <T> T getNamedBean(String name, Class<T> beanClass) {
     if (applicationContext instanceof ApplicationContext) {
       return ((ApplicationContext) applicationContext).getBean(name, beanClass);
     }
-    throw new RuntimeException(String.format("Could not find bean with name %s and type %s", name, beanClass));
+    throw new RuntimeException(
+        String.format("Could not find bean with name %s and type %s", name, beanClass));
   }
 
   @Override
