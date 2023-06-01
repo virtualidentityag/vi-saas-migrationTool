@@ -13,6 +13,7 @@ public class ImportDiocesesFromAgencyToTenantServiceTask extends MigrationTasks 
 
   private static final String CREATE_DIOCESE_TABLE =
       "CREATE TABLE IF NOT EXISTS diocese (id BIGINT NOT NULL AUTO_INCREMENT, name VARCHAR(255) NOT NULL, PRIMARY KEY (id) UNIQUE (name));";
+  private static final String dioceseTableName = "diocese";
 
   @Builder
   static class Diocese {
@@ -25,42 +26,45 @@ public class ImportDiocesesFromAgencyToTenantServiceTask extends MigrationTasks 
     val agencyJdbcTemplate =
         BeanAwareSpringLiquibase.getNamedBean("agencyServiceJdbcTemplate", JdbcTemplate.class);
 
-    val dioceseTableExistsQuery =
-        "select count(*) from information_schema.tables where table_name = ? and table_schema = 'agencyservice';";
-    val result =
-        agencyJdbcTemplate.queryForObject(dioceseTableExistsQuery, Integer.class, "diocese");
-
-    boolean dioceseTableDoesNotExist = result == null || result == 0;
-    if (dioceseTableDoesNotExist) {
+    var dioceseTableExist = doesTableExist(agencyJdbcTemplate, "agencyservice");
+    if (!dioceseTableExist) {
       log.info("Diocese table does not exist in agency service, skipping import");
+      return;
+    }
+    dioceseTableExist = doesTableExist(agencyJdbcTemplate, "tenantservice");
+    if (!dioceseTableExist) {
+      log.info("Diocese table does not exist in tenant service, skipping import");
       return;
     }
 
     val dioceses =
         agencyJdbcTemplate.query(
-            "select name from diocese", (rs, rowNum) -> new Diocese(rs.getString("name")));
+            "select name from " + dioceseTableName,
+            (rs, rowNum) -> new Diocese(rs.getString("name")));
 
     log.info("The following dioceses will be migrated: {}", dioceses);
 
     var tenantServiceJdbcTemplate =
         BeanAwareSpringLiquibase.getNamedBean("tenantServiceJdbcTemplate", JdbcTemplate.class);
 
-    assertDioceseTableCreatedInTenantService(tenantServiceJdbcTemplate);
-
     val batchUpdateResult =
         tenantServiceJdbcTemplate.batchUpdate(
-            "insert ignore into diocese (name) values (?)",
+            "insert ignore into " + dioceseTableName + " (name) values (?)",
             dioceses,
             1000,
             (ps, diocese) -> ps.setString(1, diocese.name));
 
-    log.info("Inserted {} rows into dioceses table", batchUpdateResult.length);
+    log.info("Inserted {} rows into {} table", batchUpdateResult.length, dioceseTableName);
     log.info("Finished import of dioceses from agency to tenant");
   }
 
-  private static void assertDioceseTableCreatedInTenantService(
-      JdbcTemplate tenantServiceJdbcTemplate) {
-    val numAffected = tenantServiceJdbcTemplate.update(CREATE_DIOCESE_TABLE);
-    log.info("Created diocese table with {} rows affected", numAffected);
+  private static boolean doesTableExist(JdbcTemplate agencyJdbcTemplate, String tableSchema) {
+    val dioceseTableExistsQuery =
+        "select count(*) from information_schema.tables where table_name = ? and table_schema = '"
+            + tableSchema
+            + "';";
+    val result =
+        agencyJdbcTemplate.queryForObject(dioceseTableExistsQuery, Integer.class, dioceseTableName);
+    return result != null && result == 1;
   }
 }
