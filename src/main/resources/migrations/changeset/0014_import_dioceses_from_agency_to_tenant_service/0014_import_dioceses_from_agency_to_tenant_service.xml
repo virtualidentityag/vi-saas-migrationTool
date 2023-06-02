@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
   <changeSet author="dodalovicgran" id="import_dioceses_from_agency_to_tenant_service">
-    <customChange class="com.vi.migrationtool.tenantservice.ImportDiocesesFromAgencyToTenantServiceTask">
+    <customChange class="com.vi.migrationtool.tenantservice.ImportTenantsFromDiocesesMigrationTask">
     </customChange>
   </changeSet>
 
