@@ -11,7 +11,7 @@ import lombok.val;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @Slf4j
-public class DiocesesToTenantsMigrator extends MigrationTasks {
+public class ImportTenantsFromDiocesesMigrationTask extends MigrationTasks {
 
   private static final String dioceseTableName = "diocese";
 
