@@ -66,9 +66,12 @@ public class DiocesesToTenantsMigrator extends MigrationTasks {
 
   private List<Tenant> getNewTenants(
       List<Diocese> dioceses, List<Tenant> existingTenantsInTenantDB) {
-    return existingTenantsInTenantDB.stream()
-        .filter(tenant -> dioceses.stream().noneMatch(diocese -> diocese.name.equals(tenant.name)))
-        .map(tenant -> Tenant.builder().name(tenant.name).build())
+    return dioceses.stream()
+        .filter(
+            diocese ->
+                existingTenantsInTenantDB.stream()
+                    .noneMatch(tenant -> tenant.name.equals(diocese.name)))
+        .map(diocese -> Tenant.builder().name(diocese.name).build())
         .collect(Collectors.toList());
   }
 
