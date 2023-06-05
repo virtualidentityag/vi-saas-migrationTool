@@ -6,4 +6,5 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
 
     <include file="migrations/changeset/0008_remove_lockedAgencies/0008_remove_lockedAgencies_attribute.xml"/>
+    <include file="migrations/changeset/0014_import_dioceses_from_agency_to_tenant_service/0014_import_dioceses_from_agency_to_tenant_service.xml"/>
 </databaseChangeLog>
