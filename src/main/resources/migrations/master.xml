@@ -16,4 +16,6 @@
   <include file="migrations/changeset/0010_add_notification_and_tenant_creation_release_toggles/0010_add_notification_and_tenant_creation_release_toggles.xml"/>
   <include file="migrations/changeset/0011_add_notification_technical_keycloak_role/0011_add_notification_technical_keycloak_role.xml"/>
   <include file="migrations/changeset/0012_setup_rocketchat_read_receipts/0012_setup_rocketchat_read_receipts.xml"/>
+  <include file="migrations/changeset/0013_add_videogroupchat_release_toggle/0013_add_videogroupchat_release_toggle.xml"/>
+  <include file="migrations/changeset/0014_import_dioceses_from_agency_to_tenant_service/0014_import_dioceses_from_agency_to_tenant_service.xml"/>
 </databaseChangeLog>

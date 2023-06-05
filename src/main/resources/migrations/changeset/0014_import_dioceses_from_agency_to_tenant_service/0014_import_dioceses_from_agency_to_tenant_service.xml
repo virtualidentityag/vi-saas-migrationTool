@@ -1,0 +1,11 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+  <changeSet author="dodalovicgran" id="import_dioceses_from_agency_to_tenant_service">
+    <customChange class="com.vi.migrationtool.tenantservice.ImportTenantsFromDiocesesMigrationTask">
+    </customChange>
+  </changeSet>
+
+</databaseChangeLog>
