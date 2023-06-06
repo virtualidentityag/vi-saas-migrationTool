@@ -58,7 +58,7 @@ public class ImportTenantsFromDiocesesMigrationTask extends MigrationTasks {
   private static int[] insertNewTenants(
       List<Tenant> newTenants, JdbcTemplate tenantServiceJdbcTemplate) {
     return tenantServiceJdbcTemplate.batchUpdate(
-        "insert into tenants(name, subdomain) values (?,?)",
+        "insert into tenant(name, subdomain) values (?,?)",
         newTenants.stream()
             .map(tenant -> new Object[] {tenant.name, ""})
             .collect(Collectors.toList()));
