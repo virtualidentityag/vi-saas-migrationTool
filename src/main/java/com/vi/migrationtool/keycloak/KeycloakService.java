@@ -37,6 +37,7 @@ public class KeycloakService {
 
   private static final String SEARCH_PARAM = "search";
   private static final String MAX_USERS_TO_MIGRATE = "100";
+  private static final String ADMIN_REALMS = "/admin/realms/";
   private final KeycloakConfig keycloakConfig;
 
   public void createRole(String roleName) {
@@ -46,7 +47,7 @@ public class KeycloakService {
     httpHeaders.setBearerAuth(loginResponse.getAccessToken());
     HttpEntity entity = new HttpEntity<>(getCreateRoleBody(roleName), httpHeaders);
     var createRoleUrl =
-        keycloakConfig.getAuthServerUrl() + "/admin/realms/" + keycloakConfig.getRealm() + "/roles";
+        keycloakConfig.getAuthServerUrl() + ADMIN_REALMS + keycloakConfig.getRealm() + "/roles";
     var restTemplate = new RestTemplate();
     restTemplate.setErrorHandler(getResponseErrorHandler());
     restTemplate.postForEntity(createRoleUrl, entity, Void.class);
@@ -83,6 +84,32 @@ public class KeycloakService {
     usernames.forEach(username -> addRoleToUser(username, role.get(), httpHeaders, restTemplate));
   }
 
+  public void addRoleToUsersWithRoleName(
+      final String roleNameToSearchForUsers, final String roleNameToAdd) {
+    var httpHeaders = new HttpHeaders();
+    httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+    KeycloakLoginResponseDTO loginResponse = loginAdminUser();
+    httpHeaders.setBearerAuth(loginResponse.getAccessToken());
+
+    List<KeycloakUser> keycloakUsers = getUsersWithRoleName(roleNameToSearchForUsers);
+    if (keycloakUsers.isEmpty()) {
+      log.info(
+          "No users found with the given role {}. Migration will not be applied",
+          roleNameToSearchForUsers);
+    }
+
+    var restTemplate = new RestTemplate();
+    restTemplate.setErrorHandler(getResponseErrorHandler());
+
+    Optional<RoleRepresentation> role = getRoleBy(roleNameToAdd, httpHeaders);
+    if (role.isEmpty()) {
+      log.error(
+          "The provided role {} doesn't exists in keycloak, please create it first", roleNameToAdd);
+    }
+    keycloakUsers.forEach(
+        user -> callKeycloakToAddRoleToUser(role.get(), httpHeaders, restTemplate, user));
+  }
+
   private void addRoleToUser(
       String username,
       RoleRepresentation role,
@@ -97,19 +124,35 @@ public class KeycloakService {
       return;
     }
 
+    callKeycloakToAddRoleToUser(role, httpHeaders, restTemplate, keycloakUser.get());
+  }
+
+  private void callKeycloakToAddRoleToUser(
+      RoleRepresentation role,
+      HttpHeaders httpHeaders,
+      RestTemplate restTemplate,
+      KeycloakUser keycloakUser) {
     var updateUserRolesUrl =
         keycloakConfig.getAuthServerUrl()
-            + "/admin/realms/"
+            + ADMIN_REALMS
             + keycloakConfig.getRealm()
             + "/users/"
-            + keycloakUser.get().getId()
+            + keycloakUser.getId()
             + "/role-mappings/realm";
     HttpEntity entity = new HttpEntity<>(getAddRoleToUserBody(role), httpHeaders);
     ResponseEntity<Void> response =
         restTemplate.postForEntity(updateUserRolesUrl, entity, Void.class);
 
+    if (response.getStatusCode() == HttpStatus.CONFLICT) {
+      log.info(
+          "Role was not added to the user {}, because it already was assigned",
+          role,
+          keycloakUser.getUsername());
+      return;
+    }
+
     if (response.getStatusCode() != HttpStatus.INTERNAL_SERVER_ERROR) {
-      log.info("Role {} was added to the user {} successfully", role, username);
+      log.info("Role {} was added to the user {} successfully", role, keycloakUser.getUsername());
     }
   }
 
@@ -117,7 +160,7 @@ public class KeycloakService {
     var getUsersBySearchTermURL =
         urlWithSearchParam(
             keycloakConfig.getAuthServerUrl()
-                + "/admin/realms/"
+                + ADMIN_REALMS
                 + keycloakConfig.getRealm()
                 + "/users");
 
@@ -176,7 +219,7 @@ public class KeycloakService {
     var getRolesBySearchTermUrl =
         urlWithSearchParam(
             keycloakConfig.getAuthServerUrl()
-                + "/admin/realms/"
+                + ADMIN_REALMS
                 + keycloakConfig.getRealm()
                 + "/roles");
     final Map<String, String> params = new HashMap<>();
