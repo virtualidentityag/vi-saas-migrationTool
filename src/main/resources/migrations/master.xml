@@ -16,4 +16,8 @@
   <include file="migrations/changeset/0010_add_notification_and_tenant_creation_release_toggles/0010_add_notification_and_tenant_creation_release_toggles.xml"/>
   <include file="migrations/changeset/0011_add_notification_technical_keycloak_role/0011_add_notification_technical_keycloak_role.xml"/>
   <include file="migrations/changeset/0012_setup_rocketchat_read_receipts/0012_setup_rocketchat_read_receipts.xml"/>
+  <include file="migrations/changeset/0013_add_videogroupchat_release_toggle/0013_add_videogroupchat_release_toggle.xml"/>
+  <include file="migrations/changeset/0015_add_groupchat_role_for_consultants/0015_add_groupchat_role_for_consultants.xml"/>
+
+  <!-- by default migration 0015_add_groupchat_role_for_consultants is not applied. This must be decided by each of the clients and activated if needed -->
 </databaseChangeLog>
