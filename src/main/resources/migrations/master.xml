@@ -19,5 +19,6 @@
   <include file="migrations/changeset/0013_add_videogroupchat_release_toggle/0013_add_videogroupchat_release_toggle.xml"/>
   <include file="migrations/changeset/0014_import_dioceses_from_agency_to_tenant_service/0014_import_dioceses_from_agency_to_tenant_service.xml"/>
   <include file="migrations/changeset/0015_create_jitsi_technical_keycloak_role/0015_create_jitsi_technical_keycloak_role.xml"/>
+  <include file="migrations/changeset/0016_migrate_consulting_types_description_to_topic/0016_migrate_consulting_types_description_to_topic.xml"/>
   <!-- by default migration 0015_add_groupchat_role_for_consultants is not applied. This must be decided by each of the clients and activated if needed -->
 </databaseChangeLog>
