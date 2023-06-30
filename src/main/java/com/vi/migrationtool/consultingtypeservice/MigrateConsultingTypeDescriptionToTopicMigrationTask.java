@@ -22,17 +22,18 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
   private final AgencyTopicMigrationService agencyTopicMigrationService;
 
   public MigrateConsultingTypeDescriptionToTopicMigrationTask() {
-    this.consultingTypeServiceJdbcTemplate = BeanAwareSpringLiquibase.getNamedBean(
-        "consultingTypeServiceJdbcTemplate", JdbcTemplate.class);
+    this.consultingTypeServiceJdbcTemplate =
+        BeanAwareSpringLiquibase.getNamedBean(
+            "consultingTypeServiceJdbcTemplate", JdbcTemplate.class);
 
-    this.agencyServiceJdbcTemplate = BeanAwareSpringLiquibase.getNamedBean(
-        "agencyServiceJdbcTemplate", JdbcTemplate.class);
+    this.agencyServiceJdbcTemplate =
+        BeanAwareSpringLiquibase.getNamedBean("agencyServiceJdbcTemplate", JdbcTemplate.class);
 
-    this.topicGroupMigrationService = new TopicGroupMigrationService(
-        this.consultingTypeServiceJdbcTemplate);
+    this.topicGroupMigrationService =
+        new TopicGroupMigrationService(this.consultingTypeServiceJdbcTemplate);
 
-    this.agencyTopicMigrationService = new AgencyTopicMigrationService(
-        this.agencyServiceJdbcTemplate);
+    this.agencyTopicMigrationService =
+        new AgencyTopicMigrationService(this.agencyServiceJdbcTemplate);
   }
 
   @Override
@@ -46,7 +47,6 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
     log.info("Finished migrating topic groups");
     consultingTypes.forEach(this::addAgencyTopicRelationIfNeeded);
     log.info("Finished migrating topic agencies relation");
-
   }
 
   private void batchInsertTopicsWithIdEqualToConsultingTypeId(
@@ -61,24 +61,23 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
             .filter(ct -> !topicExistsById(consultingTypeServiceJdbcTemplate, ct.getId()))
             .map(
                 ct ->
-                    new Object[]{
-                        ct.getId(),
-                        ct.getTenantId(),
-                        ct.getTitles().getShort(),
-                        ct.getDescription(),
-                        "ACTIVE",
-                        formattedCurrentDateTime,
-                        formattedCurrentDateTime,
-                        ct.getTitles().getShort(),
-                        null,
-                        ct.getUrls() != null ? ct.getUrls().getRegistrationPostcodeFallbackUrl()
-                            : "",
-                        ct.getSendFurtherStepsMessage(),
-                        ct.getTitles().getShort(),
-                        ct.getTitles().getLong(),
-                        ct.getTitles().getWelcome(),
-                        ct.getTitles().getRegistrationDropdown(),
-                        ct.getSlug()
+                    new Object[] {
+                      ct.getId(),
+                      ct.getTenantId(),
+                      ct.getTitles().getShort(),
+                      ct.getDescription(),
+                      "ACTIVE",
+                      formattedCurrentDateTime,
+                      formattedCurrentDateTime,
+                      ct.getTitles().getShort(),
+                      null,
+                      ct.getUrls() != null ? ct.getUrls().getRegistrationPostcodeFallbackUrl() : "",
+                      ct.getSendFurtherStepsMessage(),
+                      ct.getTitles().getShort(),
+                      ct.getTitles().getLong(),
+                      ct.getTitles().getWelcome(),
+                      ct.getTitles().getRegistrationDropdown(),
+                      ct.getSlug()
                     })
             .collect(Collectors.toList()));
   }
@@ -96,11 +95,12 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
   private void addTopicGroupIfNeeded(ConsultingTypeEntity consultingTypeEntity) {
     var topicGroups = consultingTypeEntity.getGroups();
     topicGroups.forEach(
-        topicGroup -> topicGroupMigrationService.insertTopicGroupIfNotExists(topicGroup)
-            .ifPresent(
-                topicGroupId -> topicGroupMigrationService.createTopicGroupRelationIfNotExists(
-                    topicGroupId, consultingTypeEntity.getId())));
+        topicGroup ->
+            topicGroupMigrationService
+                .insertTopicGroupIfNotExists(topicGroup)
+                .ifPresent(
+                    topicGroupId ->
+                        topicGroupMigrationService.createTopicGroupRelationIfNotExists(
+                            topicGroupId, consultingTypeEntity.getId())));
   }
-
-
 }
