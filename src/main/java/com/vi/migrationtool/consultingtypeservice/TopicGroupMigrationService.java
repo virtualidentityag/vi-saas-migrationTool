@@ -61,12 +61,11 @@ public class TopicGroupMigrationService {
   private boolean topicGroupRelationExists(Integer topicGroupId, Integer topicId) {
     String sql = "SELECT COUNT(*) FROM topic_group_x_topic WHERE group_id = ? AND topic_id = ?";
     try {
-      Integer count = consultingTypeJdbcTemplate.queryForObject(sql, Integer.class, topicGroupId, topicId);
+      Integer count = consultingTypeJdbcTemplate.queryForObject(sql, Integer.class, topicGroupId,
+          topicId);
       return count != null && count > 0;
     } catch (EmptyResultDataAccessException e) {
       return false;
     }
   }
-
-
 }
