@@ -4,21 +4,24 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
-  <include file="migrations/changeset/0001_setup_keycloak_roles/0001_setup_keycloak_roles.xml"/>
-  <include file="migrations/changeset/0002_setup_rocketchat_delete_message_config/0002_setup_rocketchat_delete_message_config.xml"/>
-  <include file="migrations/changeset/0003_add_tenant_can_edit_legaltexts_applevel_setting/0003_add_tenant_can_edit_legaltexts_applevel_setting.xml"/>
-  <include file="migrations/changeset/0004_add_topic_admin_role_to_super_admin_user/0004_add_topic_admin_role_to_super_admin_user.xml"/>
-  <include file="migrations/changeset/0005_add_permission_to_technical_role_rocketchat/0005_add_permission_to_technical_role_rocketchat.xml"/>
-  <include file="migrations/changeset/0006_create_admin_user_table_entries_for_existing_admins/0006_create_admin_user_table_entries_for_existing_admins.xml"/>
-  <include file="migrations/changeset/0007_add_view_room_permission_to_technical_role_rocketchat/0007_add_view_room_permission_to_technical_role_rocketchat.xml"/>
-  <include file="migrations/changeset/0008_remove_lockedAgencies/0008_remove_lockedAgencies_attribute.xml"/>
-  <include file="migrations/changeset/0009_add_documentation_enabled_applevel_setting/0009_add_documentation_enabled_applevel_setting.xml"/>
-  <include file="migrations/changeset/0010_add_notification_and_tenant_creation_release_toggles/0010_add_notification_and_tenant_creation_release_toggles.xml"/>
-  <include file="migrations/changeset/0011_add_notification_technical_keycloak_role/0011_add_notification_technical_keycloak_role.xml"/>
-  <include file="migrations/changeset/0012_setup_rocketchat_read_receipts/0012_setup_rocketchat_read_receipts.xml"/>
-  <include file="migrations/changeset/0013_add_videogroupchat_release_toggle/0013_add_videogroupchat_release_toggle.xml"/>
-  <include file="migrations/changeset/0014_import_dioceses_from_agency_to_tenant_service/0014_import_dioceses_from_agency_to_tenant_service.xml"/>
-  <include file="migrations/changeset/0015_create_jitsi_technical_keycloak_role/0015_create_jitsi_technical_keycloak_role.xml"/>
+<!--  <include file="migrations/changeset/0001_setup_keycloak_roles/0001_setup_keycloak_roles.xml"/>-->
+<!--  <include file="migrations/changeset/0002_setup_rocketchat_delete_message_config/0002_setup_rocketchat_delete_message_config.xml"/>-->
+<!--  <include file="migrations/changeset/0003_add_tenant_can_edit_legaltexts_applevel_setting/0003_add_tenant_can_edit_legaltexts_applevel_setting.xml"/>-->
+<!--  <include file="migrations/changeset/0004_add_topic_admin_role_to_super_admin_user/0004_add_topic_admin_role_to_super_admin_user.xml"/>-->
+<!--  <include file="migrations/changeset/0005_add_permission_to_technical_role_rocketchat/0005_add_permission_to_technical_role_rocketchat.xml"/>-->
+<!--  <include file="migrations/changeset/0006_create_admin_user_table_entries_for_existing_admins/0006_create_admin_user_table_entries_for_existing_admins.xml"/>-->
+<!--  <include file="migrations/changeset/0007_add_view_room_permission_to_technical_role_rocketchat/0007_add_view_room_permission_to_technical_role_rocketchat.xml"/>-->
+<!--  <include file="migrations/changeset/0008_remove_lockedAgencies/0008_remove_lockedAgencies_attribute.xml"/>-->
+<!--  <include file="migrations/changeset/0009_add_documentation_enabled_applevel_setting/0009_add_documentation_enabled_applevel_setting.xml"/>-->
+<!--  <include file="migrations/changeset/0010_add_notification_and_tenant_creation_release_toggles/0010_add_notification_and_tenant_creation_release_toggles.xml"/>-->
+<!--  <include file="migrations/changeset/0011_add_notification_technical_keycloak_role/0011_add_notification_technical_keycloak_role.xml"/>-->
+<!--  <include file="migrations/changeset/0012_setup_rocketchat_read_receipts/0012_setup_rocketchat_read_receipts.xml"/>-->
+<!--  <include file="migrations/changeset/0013_add_videogroupchat_release_toggle/0013_add_videogroupchat_release_toggle.xml"/>-->
+<!--  <include file="migrations/changeset/0014_import_dioceses_from_agency_to_tenant_service/0014_import_dioceses_from_agency_to_tenant_service.xml"/>-->
+<!--  <include file="migrations/changeset/0015_create_jitsi_technical_keycloak_role/0015_create_jitsi_technical_keycloak_role.xml"/>-->
+<!-- by default migration 0015_add_groupchat_role_for_consultants is not applied. This must be decided by each of the clients and activated if needed -->
   <include file="migrations/changeset/0016_migrate_consulting_types_description_to_topic/0016_migrate_consulting_types_description_to_topic.xml"/>
-  <!-- by default migration 0015_add_groupchat_role_for_consultants is not applied. This must be decided by each of the clients and activated if needed -->
+  <!-- by default migration 0017_migrate_agency_default_counselling_relations is not applied. This must be decided by each of the clients and activated if needed -->
+  <include file="migrations/changeset/0017_migrate_agency_default_counselling_relations/0017_migrate_agency_default_counselling_relations.xml"/>
+
 </databaseChangeLog>
