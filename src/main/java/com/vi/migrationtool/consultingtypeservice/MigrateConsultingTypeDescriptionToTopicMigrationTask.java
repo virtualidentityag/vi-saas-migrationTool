@@ -22,17 +22,18 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
   private final AgencyTopicMigrationService agencyTopicMigrationService;
 
   public MigrateConsultingTypeDescriptionToTopicMigrationTask() {
-    this.consultingTypeServiceJdbcTemplate = BeanAwareSpringLiquibase.getNamedBean(
-        "consultingTypeServiceJdbcTemplate", JdbcTemplate.class);
+    this.consultingTypeServiceJdbcTemplate =
+        BeanAwareSpringLiquibase.getNamedBean(
+            "consultingTypeServiceJdbcTemplate", JdbcTemplate.class);
 
-    this.agencyServiceJdbcTemplate = BeanAwareSpringLiquibase.getNamedBean(
-        "agencyServiceJdbcTemplate", JdbcTemplate.class);
+    this.agencyServiceJdbcTemplate =
+        BeanAwareSpringLiquibase.getNamedBean("agencyServiceJdbcTemplate", JdbcTemplate.class);
 
-    this.topicGroupMigrationService = new TopicGroupMigrationService(
-        this.consultingTypeServiceJdbcTemplate);
+    this.topicGroupMigrationService =
+        new TopicGroupMigrationService(this.consultingTypeServiceJdbcTemplate);
 
-    this.agencyTopicMigrationService = new AgencyTopicMigrationService(
-        this.agencyServiceJdbcTemplate);
+    this.agencyTopicMigrationService =
+        new AgencyTopicMigrationService(this.agencyServiceJdbcTemplate);
   }
 
   @Override
@@ -46,7 +47,6 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
     log.info("Finished migrating topic groups");
     consultingTypes.forEach(this::addAgencyTopicRelationIfNeeded);
     log.info("Finished migrating topic agencies relation");
-
   }
 
   private void batchInsertTopicsWithIdEqualToConsultingTypeId(
@@ -96,11 +96,12 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
   private void addTopicGroupIfNeeded(ConsultingTypeEntity consultingTypeEntity) {
     var topicGroups = consultingTypeEntity.getGroups();
     topicGroups.forEach(
-        topicGroup -> topicGroupMigrationService.insertTopicGroupIfNotExists(topicGroup)
-            .ifPresent(
-                topicGroupId -> topicGroupMigrationService.createTopicGroupRelationIfNotExists(
-                    topicGroupId, consultingTypeEntity.getId())));
+        topicGroup ->
+            topicGroupMigrationService
+                .insertTopicGroupIfNotExists(topicGroup)
+                .ifPresent(
+                    topicGroupId ->
+                        topicGroupMigrationService.createTopicGroupRelationIfNotExists(
+                            topicGroupId, consultingTypeEntity.getId())));
   }
-
-
 }
