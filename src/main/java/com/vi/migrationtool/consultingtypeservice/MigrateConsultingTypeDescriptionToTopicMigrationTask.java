@@ -64,8 +64,8 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
                     new Object[]{
                         ct.getId(),
                         ct.getTenantId(),
-                        ct.getTitles().getShort(),
-                        ct.getDescription(),
+                        "{ \"de\": \"" + ct.getTitles().getShort() + "\"}",
+                        "{ \"de\": \"" + ct.getDescription() + "\"}",
                         "ACTIVE",
                         formattedCurrentDateTime,
                         formattedCurrentDateTime,
