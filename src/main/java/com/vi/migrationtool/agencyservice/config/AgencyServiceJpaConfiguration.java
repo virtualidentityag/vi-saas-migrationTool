@@ -1,4 +1,4 @@
-package com.vi.migrationtool.tenantservice.config;
+package com.vi.migrationtool.agencyservice.config;
 
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
