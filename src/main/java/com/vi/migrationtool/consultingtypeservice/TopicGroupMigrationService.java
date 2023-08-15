@@ -12,7 +12,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @Slf4j
 public class TopicGroupMigrationService {
 
-  public static final String INSERT_QUERY = "INSERT INTO topic_group (id, name) VALUES (NEXT VALUE FOR sequence_topic_group, ?)";
+  public static final String INSERT_QUERY =
+      "INSERT INTO topic_group (id, name) VALUES (NEXT VALUE FOR sequence_topic_group, ?)";
   private JdbcTemplate consultingTypeJdbcTemplate;
 
   public Optional<Integer> insertTopicGroupIfNotExists(String groupName) {
@@ -21,11 +22,13 @@ public class TopicGroupMigrationService {
       return Optional.empty();
     }
     if (!topicGroupExists(groupName)) {
-      consultingTypeJdbcTemplate.update(con -> {
-        PreparedStatement ps = con.prepareStatement(INSERT_QUERY, Statement.RETURN_GENERATED_KEYS);
-        ps.setString(1, groupName);
-        return ps;
-      });
+      consultingTypeJdbcTemplate.update(
+          con -> {
+            PreparedStatement ps =
+                con.prepareStatement(INSERT_QUERY, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, groupName);
+            return ps;
+          });
       String idQuery = "SELECT MAX(id) from topic_group";
 
       log.info("Topic group inserted: " + groupName);
@@ -53,16 +56,14 @@ public class TopicGroupMigrationService {
 
   private void insertTopicGroupRelation(Integer topicGroupId, Integer topicId) {
     consultingTypeJdbcTemplate.update(
-        "insert into topic_group_x_topic (group_id, topic_id) values (?,?)",
-        topicGroupId,
-        topicId);
+        "insert into topic_group_x_topic (group_id, topic_id) values (?,?)", topicGroupId, topicId);
   }
 
   private boolean topicGroupRelationExists(Integer topicGroupId, Integer topicId) {
     String sql = "SELECT COUNT(*) FROM topic_group_x_topic WHERE group_id = ? AND topic_id = ?";
     try {
-      Integer count = consultingTypeJdbcTemplate.queryForObject(sql, Integer.class, topicGroupId,
-          topicId);
+      Integer count =
+          consultingTypeJdbcTemplate.queryForObject(sql, Integer.class, topicGroupId, topicId);
       return count != null && count > 0;
     } catch (EmptyResultDataAccessException e) {
       return false;

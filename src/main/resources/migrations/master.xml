@@ -22,4 +22,5 @@
   <!-- by default migration 0015_add_groupchat_role_for_consultants is not applied. This must be decided by each of the clients and activated if needed -->
   <!-- by default migraiton 0016_migrate_consulting_types_description_to_topic. This must be decided by each of the clients and activated if needed -->
   <!-- by default migration 0017_migrate_agency_default_counselling_relations is not applied. This must be decided by each of the clients and activated if needed -->
+    <!-- by default migration 0018_migrate_tenant_admins_to_set_user_admin_and_agency_admin_roles is not applied. This must be decided by each of the clients and activated if needed -->
 </databaseChangeLog>

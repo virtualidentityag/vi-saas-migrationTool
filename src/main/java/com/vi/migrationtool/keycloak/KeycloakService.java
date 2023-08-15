@@ -84,8 +84,8 @@ public class KeycloakService {
     usernames.forEach(username -> addRoleToUser(username, role.get(), httpHeaders, restTemplate));
   }
 
-  public void addRoleToUsersWithRoleName(
-      final String roleNameToSearchForUsers, final String roleNameToAdd) {
+  public void addRolesToUsersWithRoleName(
+      final String roleNameToSearchForUsers, final List<String> rolesNameToAdd) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
     KeycloakLoginResponseDTO loginResponse = loginAdminUser();
@@ -97,14 +97,22 @@ public class KeycloakService {
           "No users found with the given role {}. Migration will not be applied",
           roleNameToSearchForUsers);
     }
-
     var restTemplate = new RestTemplate();
     restTemplate.setErrorHandler(getResponseErrorHandler());
+    rolesNameToAdd.stream()
+        .forEach(
+            role -> tryToAddRoleToKeycloakUser(role, keycloakUsers, httpHeaders, restTemplate));
+  }
 
-    Optional<RoleRepresentation> role = getRoleBy(roleNameToAdd, httpHeaders);
+  private void tryToAddRoleToKeycloakUser(
+      String roleNameDoAdd,
+      List<KeycloakUser> keycloakUsers,
+      HttpHeaders httpHeaders,
+      RestTemplate restTemplate) {
+    Optional<RoleRepresentation> role = getRoleBy(roleNameDoAdd, httpHeaders);
     if (role.isEmpty()) {
       log.error(
-          "The provided role {} doesn't exists in keycloak, please create it first", roleNameToAdd);
+          "The provided role {} doesn't exists in keycloak, please create it first", roleNameDoAdd);
     }
     keycloakUsers.forEach(
         user -> callKeycloakToAddRoleToUser(role.get(), httpHeaders, restTemplate, user));
@@ -286,14 +294,11 @@ public class KeycloakService {
     return new ResponseErrorHandler() {
       @Override
       public boolean hasError(ClientHttpResponse response) throws IOException {
-        if (response.getStatusCode().equals(HttpStatus.CONFLICT)) {
-          return false;
-        }
-        return true;
+        return !response.getStatusCode().equals(HttpStatus.CONFLICT);
       }
 
       @Override
-      public void handleError(ClientHttpResponse response) throws IOException {}
+      public void handleError(ClientHttpResponse response) throws IOException { log.warn("Handling keycloak error response");}
     };
   }
 }
