@@ -61,24 +61,23 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
             .filter(ct -> !topicExistsById(consultingTypeServiceJdbcTemplate, ct.getId()))
             .map(
                 ct ->
-                    new Object[]{
-                        ct.getId(),
-                        ct.getTenantId(),
-                        "{ \"de\": \"" + ct.getTitles().getShort() + "\"}",
-                        "{ \"de\": \"" + ct.getDescription() + "\"}",
-                        "ACTIVE",
-                        formattedCurrentDateTime,
-                        formattedCurrentDateTime,
-                        ct.getTitles().getShort(),
-                        null,
-                        ct.getUrls() != null ? ct.getUrls().getRegistrationPostcodeFallbackUrl()
-                            : "",
-                        ct.getSendFurtherStepsMessage(),
-                        ct.getTitles().getShort(),
-                        ct.getTitles().getLong(),
-                        ct.getTitles().getWelcome(),
-                        ct.getTitles().getRegistrationDropdown(),
-                        ct.getSlug()
+                    new Object[] {
+                      ct.getId(),
+                      ct.getTenantId(),
+                      "{ \"de\": \"" + ct.getTitles().getShort() + "\"}",
+                      "{ \"de\": \"" + ct.getDescription() + "\"}",
+                      "ACTIVE",
+                      formattedCurrentDateTime,
+                      formattedCurrentDateTime,
+                      ct.getTitles().getShort(),
+                      null,
+                      ct.getUrls() != null ? ct.getUrls().getRegistrationPostcodeFallbackUrl() : "",
+                      ct.getSendFurtherStepsMessage(),
+                      ct.getTitles().getShort(),
+                      ct.getTitles().getLong(),
+                      ct.getTitles().getWelcome(),
+                      ct.getTitles().getRegistrationDropdown(),
+                      ct.getSlug()
                     })
             .collect(Collectors.toList()));
   }

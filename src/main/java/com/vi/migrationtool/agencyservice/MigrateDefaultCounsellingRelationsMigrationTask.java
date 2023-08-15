@@ -2,7 +2,6 @@ package com.vi.migrationtool.agencyservice;
 
 import com.vi.migrationtool.common.MigrationTasks;
 import com.vi.migrationtool.config.BeanAwareSpringLiquibase;
-
 import liquibase.database.Database;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,9 +12,10 @@ public class MigrateDefaultCounsellingRelationsMigrationTask extends MigrationTa
   private final JdbcTemplate agencyServiceJdbcTemplate;
 
   public MigrateDefaultCounsellingRelationsMigrationTask() {
-    this.agencyServiceJdbcTemplate = BeanAwareSpringLiquibase.getNamedBean(
-        "agencyServiceJdbcTemplate", JdbcTemplate.class);
+    this.agencyServiceJdbcTemplate =
+        BeanAwareSpringLiquibase.getNamedBean("agencyServiceJdbcTemplate", JdbcTemplate.class);
   }
+
   @Override
   public void execute(Database database) {
     log.info("Migrating agency counselling reations to default values");
