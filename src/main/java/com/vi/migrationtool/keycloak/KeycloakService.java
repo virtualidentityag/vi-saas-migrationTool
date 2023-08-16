@@ -298,7 +298,9 @@ public class KeycloakService {
       }
 
       @Override
-      public void handleError(ClientHttpResponse response) throws IOException { log.warn("Handling keycloak error response");}
+      public void handleError(ClientHttpResponse response) throws IOException {
+        log.warn("Handling keycloak error response");
+      }
     };
   }
 }
