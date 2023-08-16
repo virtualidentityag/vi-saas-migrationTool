@@ -23,5 +23,6 @@
   <include file="migrations/changeset/0015_create_jitsi_technical_keycloak_role/0015_create_jitsi_technical_keycloak_role.xml"/>
   <!-- skip 0016_migrate_consulting_types_description_to_topic/0016_migrate_consulting_types_description_to_topic.xml"/>-->
   <include file="migrations/changeset/0017_migrate_agency_default_counselling_relations/0017_migrate_agency_default_counselling_relations.xml"/>
+  <include file="migrations/changeset/0019_add_counselling_relation_release_toggle/0019_add_counselling_relation_release_toggle.xml"/>
 
 </databaseChangeLog>
