@@ -21,7 +21,7 @@ public class MigrateDefaultCounsellingRelationsMigrationTask extends MigrationTa
     log.info("Migrating agency counselling reations to default values");
     try {
       agencyServiceJdbcTemplate.update(
-          "update agency set counselling_relations = 'SELF_COUNSELLING,FAMILY_COUNSELLING,RELATIVE_COUNSELLING' "
+          "update agency set counselling_relations = 'SELF_COUNSELLING,PARENTAL_COUNSELLING,RELATIVE_COUNSELLING' "
               + "where counselling_relations is null");
     } catch (Exception e) {
       log.error("Error while migrating agency counselling relations to default values", e);
