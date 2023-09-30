@@ -290,6 +290,53 @@ public class KeycloakService {
     }
   }
 
+  public void addCustomAttributeToUsersWithRole(String customAttribute, Long value,
+      List<String> roleNames) {
+    
+    roleNames.stream().forEach(roleName -> addCustomAttributeToUsersWithRole(customAttribute, value, roleName));
+
+  }
+
+  private void addCustomAttributeToUsersWithRole(String customAttribute, Long value, String roleName) {
+
+    var httpHeaders = new HttpHeaders();
+    httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+    KeycloakLoginResponseDTO loginResponse = loginAdminUser();
+    httpHeaders.setBearerAuth(loginResponse.getAccessToken());
+
+    Optional<RoleRepresentation> role = getRoleBy(roleName, httpHeaders);
+    if (role.isEmpty()) {
+      log.error(
+          "The provided role {} doesn't exists in keycloak, please create it first", roleName);
+    }
+
+    var restTemplate = new RestTemplate();
+    restTemplate.setErrorHandler(getResponseErrorHandler());
+    getUsersWithRoleName(roleName, httpHeaders).forEach(user -> addCustomAttributeToUser(customAttribute, value, httpHeaders, restTemplate, user));
+  }
+
+  private void addCustomAttributeToUser(String customAttribute, Long value, HttpHeaders httpHeaders,
+      RestTemplate restTemplate, KeycloakUser user) {
+    var updateUserRolesUrl =
+        keycloakConfig.getAuthServerUrl()
+            + ADMIN_REALMS
+            + keycloakConfig.getRealm()
+            + "/users/"
+            + user.getId();
+    HttpEntity entity = new HttpEntity<>(getAddCustomAttributeToUserBody(customAttribute, value), httpHeaders);
+    restTemplate.exchange(updateUserRolesUrl, HttpMethod.PUT, entity, Void.class);
+  }
+
+  private Object getAddCustomAttributeToUserBody(String customAttribute, Long value) {
+    try {
+      JSONObject body = new JSONObject();
+      body.put(customAttribute, value);
+      return body.toString();
+    } catch (JSONException e) {
+      return null;
+    }
+  }
+
   private static ResponseErrorHandler getResponseErrorHandler() {
     return new ResponseErrorHandler() {
       @Override
