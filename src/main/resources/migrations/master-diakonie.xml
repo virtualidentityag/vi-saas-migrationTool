@@ -9,4 +9,5 @@
     <include file="migrations/changeset/0014_import_dioceses_from_agency_to_tenant_service/0014_import_dioceses_from_agency_to_tenant_service.xml"/>
     <include file="migrations/changeset/0016_migrate_consulting_types_description_to_topic/0016_migrate_consulting_types_description_to_topic.xml"/>
     <include file="migrations/changeset/0018_migrate_tenant_admins_to_set_user_admin_and_agency_admin_roles/0018_migrate_tenant_admins_to_set_user_admin_and_agency_admin_roles.xml"/>
+    <include file="migrations/changeset/0021_add_custom_keycloak_attribute_to_users_with_role/0021_add_custom_keycloak_attribute_to_users_with_role.xml"/>
 </databaseChangeLog>
