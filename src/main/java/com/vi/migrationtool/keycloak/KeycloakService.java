@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -38,6 +39,7 @@ public class KeycloakService {
   private static final String SEARCH_PARAM = "search";
   private static final String MAX_USERS_TO_MIGRATE = "500";
   private static final String ADMIN_REALMS = "/admin/realms/";
+  private static final String PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG = "The provided role {} doesn't exists in keycloak, please create it first";
   private final KeycloakConfig keycloakConfig;
 
   public void createRole(String roleName) {
@@ -76,7 +78,7 @@ public class KeycloakService {
     Optional<RoleRepresentation> role = getRoleBy(roleName, httpHeaders);
     if (role.isEmpty()) {
       log.error(
-          "The provided role {} doesn't exists in keycloak, please create it first", roleName);
+          PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG, roleName);
     }
 
     var restTemplate = new RestTemplate();
@@ -112,7 +114,7 @@ public class KeycloakService {
     Optional<RoleRepresentation> role = getRoleBy(roleNameDoAdd, httpHeaders);
     if (role.isEmpty()) {
       log.error(
-          "The provided role {} doesn't exists in keycloak, please create it first", roleNameDoAdd);
+          PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG, roleNameDoAdd);
     }
     keycloakUsers.forEach(
         user -> callKeycloakToAddRoleToUser(role.get(), httpHeaders, restTemplate, user));
@@ -290,14 +292,20 @@ public class KeycloakService {
     }
   }
 
-  public void addCustomAttributeToUsersWithRole(String customAttribute, Long value,
-      List<String> roleNames) {
-    
-    roleNames.stream().forEach(roleName -> addCustomAttributeToUsersWithRole(customAttribute, value, roleName));
-
+  public List<UsersWithRole> addCustomAttributeToUsersWithRole(
+      String customAttribute, Long value, List<String> roleNames) {
+    if (roleNames != null) {
+      return roleNames.stream()
+          .map(roleName -> addCustomAttributeToUsersWithRole(customAttribute, value, roleName))
+          .collect(Collectors.toList());
+    } else {
+      log.warn("No role names provided: {}", this.getClass().getSimpleName());
+      return Collections.emptyList();
+    }
   }
 
-  private void addCustomAttributeToUsersWithRole(String customAttribute, Long value, String roleName) {
+  private UsersWithRole addCustomAttributeToUsersWithRole(
+      String customAttribute, Long value, String roleName) {
 
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -307,34 +315,64 @@ public class KeycloakService {
     Optional<RoleRepresentation> role = getRoleBy(roleName, httpHeaders);
     if (role.isEmpty()) {
       log.error(
-          "The provided role {} doesn't exists in keycloak, please create it first", roleName);
+          PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG, roleName);
     }
 
     var restTemplate = new RestTemplate();
     restTemplate.setErrorHandler(getResponseErrorHandler());
-    getUsersWithRoleName(roleName, httpHeaders).forEach(user -> addCustomAttributeToUser(customAttribute, value, httpHeaders, restTemplate, user));
+    var users = getUsersWithRoleName(roleName, httpHeaders);
+    var updatedUsers =
+        users.stream()
+            .map(
+                user ->
+                    addCustomAttributeToUserIfDoesNotExist(
+                        customAttribute, value, httpHeaders, restTemplate, user))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
+
+    return new UsersWithRole(roleName, updatedUsers);
   }
 
-  private void addCustomAttributeToUser(String customAttribute, Long value, HttpHeaders httpHeaders,
-      RestTemplate restTemplate, KeycloakUser user) {
+  private Optional<String> addCustomAttributeToUserIfDoesNotExist(
+      String customAttribute,
+      Long customAttributeValue,
+      HttpHeaders httpHeaders,
+      RestTemplate restTemplate,
+      KeycloakUser user) {
     var updateUserRolesUrl =
         keycloakConfig.getAuthServerUrl()
             + ADMIN_REALMS
             + keycloakConfig.getRealm()
             + "/users/"
             + user.getId();
-    HttpEntity entity = new HttpEntity<>(getAddCustomAttributeToUserBody(customAttribute, value), httpHeaders);
-    restTemplate.exchange(updateUserRolesUrl, HttpMethod.PUT, entity, Void.class);
-  }
 
-  private Object getAddCustomAttributeToUserBody(String customAttribute, Long value) {
-    try {
-      JSONObject body = new JSONObject();
-      body.put(customAttribute, value);
-      return body.toString();
-    } catch (JSONException e) {
-      return null;
+    Map<String, Object> attributes = (Map<String, Object>) user.getAttributes();
+    if (attributes.containsKey(customAttribute)) {
+      log.info(
+          "User {} already has the custom attribute {}, will not override it's value",
+          user.getUsername(),
+          customAttribute);
+      return Optional.empty();
     }
+    attributes.put(customAttribute, customAttributeValue);
+    try {
+      restTemplate.exchange(
+          updateUserRolesUrl, HttpMethod.PUT, new HttpEntity<>(user, httpHeaders), Void.class);
+    } catch (Exception e) {
+      log.error(
+          "Error while adding custom attribute {} = {}, to user {}",
+          customAttribute,
+          customAttributeValue,
+          user.getUsername());
+      return Optional.empty();
+    }
+    log.info(
+        "Added keycloak attribute {} = {}, to user {}",
+        customAttribute,
+        customAttributeValue,
+        user.getUsername());
+    return Optional.of(user.getId());
   }
 
   private static ResponseErrorHandler getResponseErrorHandler() {
