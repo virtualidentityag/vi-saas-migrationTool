@@ -39,7 +39,8 @@ public class KeycloakService {
   private static final String SEARCH_PARAM = "search";
   private static final String MAX_USERS_TO_MIGRATE = "500";
   private static final String ADMIN_REALMS = "/admin/realms/";
-  private static final String PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG = "The provided role {} doesn't exists in keycloak, please create it first";
+  private static final String PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG =
+      "The provided role {} doesn't exists in keycloak, please create it first";
   private final KeycloakConfig keycloakConfig;
 
   public void createRole(String roleName) {
@@ -77,8 +78,7 @@ public class KeycloakService {
 
     Optional<RoleRepresentation> role = getRoleBy(roleName, httpHeaders);
     if (role.isEmpty()) {
-      log.error(
-          PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG, roleName);
+      log.error(PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG, roleName);
     }
 
     var restTemplate = new RestTemplate();
@@ -113,8 +113,7 @@ public class KeycloakService {
       RestTemplate restTemplate) {
     Optional<RoleRepresentation> role = getRoleBy(roleNameDoAdd, httpHeaders);
     if (role.isEmpty()) {
-      log.error(
-          PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG, roleNameDoAdd);
+      log.error(PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG, roleNameDoAdd);
     }
     keycloakUsers.forEach(
         user -> callKeycloakToAddRoleToUser(role.get(), httpHeaders, restTemplate, user));
@@ -314,8 +313,7 @@ public class KeycloakService {
 
     Optional<RoleRepresentation> role = getRoleBy(roleName, httpHeaders);
     if (role.isEmpty()) {
-      log.error(
-          PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG, roleName);
+      log.error(PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG, roleName);
     }
 
     var restTemplate = new RestTemplate();
