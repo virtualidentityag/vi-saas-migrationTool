@@ -19,10 +19,11 @@
     <include file="migrations/changeset/0013_add_videogroupchat_release_toggle/0013_add_videogroupchat_release_toggle.xml"/>
     <include file="migrations/changeset/0014_import_dioceses_from_agency_to_tenant_service/0014_import_dioceses_from_agency_to_tenant_service.xml"/>
     <include file="migrations/changeset/0015_create_jitsi_technical_keycloak_role/0015_create_jitsi_technical_keycloak_role.xml"/>
-  <!-- by default migration 0015_add_groupchat_role_for_consultants is not applied. This must be decided by each of the clients and activated if needed -->
-  <!-- by default migraiton 0016_migrate_consulting_types_description_to_topic. This must be decided by each of the clients and activated if needed -->
-  <!-- by default migration 0017_migrate_agency_default_counselling_relations is not applied. This must be decided by each of the clients and activated if needed -->
+    <!-- by default migration 0015_add_groupchat_role_for_consultants is not applied. This must be decided by each of the clients and activated if needed -->
+    <!-- by default migraiton 0016_migrate_consulting_types_description_to_topic. This must be decided by each of the clients and activated if needed -->
+    <!-- by default migration 0017_migrate_agency_default_counselling_relations is not applied. This must be decided by each of the clients and activated if needed -->
     <!-- by default migration 0018_migrate_tenant_admins_to_set_user_admin_and_agency_admin_roles is not applied. This must be decided by each of the clients and activated if needed -->
     <!-- by default migration 0019_add_counselling_relation_release_toggle is not applied. This must be decided by each of the clients and activated if needed -->
     <!-- by default migration 0020_disable_rocketchat_2fa is not applied. This must be decided by each of the clients and activated if needed -->
+    <!-- by default migration 0021_add_custom_keycloak_attribute_to_users_with_role is not applied. This must be decided by each of the clients and activated if needed -->
 </databaseChangeLog>
