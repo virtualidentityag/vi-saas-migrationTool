@@ -16,7 +16,8 @@ public class KeycloakAddRolesToUsersWithRoleTask extends MigrationTasks {
   public void execute(Database database) {
     if (roleNames != null) {
       KeycloakService keycloakService = BeanAwareSpringLiquibase.getBean(KeycloakService.class);
-      keycloakService.addRolesToUsersWithRoleName(roleNameToSearchForUsers, List.of(roleNames.split(SPLIT_CHAR)));
+      keycloakService.addRolesToUsersWithRoleName(
+          roleNameToSearchForUsers, List.of(roleNames.split(SPLIT_CHAR)));
     }
   }
 }
