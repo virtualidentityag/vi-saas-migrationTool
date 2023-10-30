@@ -26,4 +26,6 @@
     <!-- by default migration 0019_add_counselling_relation_release_toggle is not applied. This must be decided by each of the clients and activated if needed -->
     <!-- by default migration 0020_disable_rocketchat_2fa is not applied. This must be decided by each of the clients and activated if needed -->
     <!-- by default migration 0021_add_custom_keycloak_attribute_to_users_with_role is not applied. This must be decided by each of the clients and activated if needed -->
+    <!-- by default migration 0022_add_restricted_consultant_admin_keycloak_role is not applied. This must be decided by each of the clients and activated if needed -->
+
 </databaseChangeLog>
