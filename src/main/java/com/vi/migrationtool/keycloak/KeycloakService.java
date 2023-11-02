@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +53,7 @@ public class KeycloakService {
     var createRoleUrl =
         keycloakConfig.getAuthServerUrl() + ADMIN_REALMS + keycloakConfig.getRealm() + "/roles";
     var restTemplate = new RestTemplate();
-    restTemplate.setErrorHandler(getResponseErrorHandler());
+    restTemplate.setErrorHandler(nonFaultTolerantResponseErrorHandler());
     restTemplate.postForEntity(createRoleUrl, entity, Void.class);
   }
 
@@ -82,7 +83,7 @@ public class KeycloakService {
     }
 
     var restTemplate = new RestTemplate();
-    restTemplate.setErrorHandler(getResponseErrorHandler());
+    restTemplate.setErrorHandler(faultTolerantResponseErrorHandler());
     usernames.forEach(username -> addRoleToUser(username, role.get(), httpHeaders, restTemplate));
   }
 
@@ -100,7 +101,7 @@ public class KeycloakService {
           roleNameToSearchForUsers);
     }
     var restTemplate = new RestTemplate();
-    restTemplate.setErrorHandler(getResponseErrorHandler());
+    restTemplate.setErrorHandler(faultTolerantResponseErrorHandler());
     rolesNameToAdd.stream()
         .forEach(
             role -> tryToAddRoleToKeycloakUser(role, keycloakUsers, httpHeaders, restTemplate));
@@ -317,7 +318,7 @@ public class KeycloakService {
     }
 
     var restTemplate = new RestTemplate();
-    restTemplate.setErrorHandler(getResponseErrorHandler());
+    restTemplate.setErrorHandler(faultTolerantResponseErrorHandler());
     var users = getUsersWithRoleName(roleName, httpHeaders);
     var updatedUsers =
         users.stream()
@@ -373,7 +374,18 @@ public class KeycloakService {
     return Optional.of(user.getId());
   }
 
-  private static ResponseErrorHandler getResponseErrorHandler() {
+  private static ResponseErrorHandler faultTolerantResponseErrorHandler() {
+    return getResponseErrorHandler(response -> {});
+  }
+
+  private static ResponseErrorHandler nonFaultTolerantResponseErrorHandler() {
+    return getResponseErrorHandler(response -> {
+      throw new IllegalStateException("Received exception calling keyclak API, migration will fail");
+    });
+  }
+
+  private static ResponseErrorHandler getResponseErrorHandler(
+      Consumer<ClientHttpResponse> errorHandler) {
     return new ResponseErrorHandler() {
       @Override
       public boolean hasError(ClientHttpResponse response) throws IOException {
@@ -383,6 +395,10 @@ public class KeycloakService {
       @Override
       public void handleError(ClientHttpResponse response) throws IOException {
         log.warn("Handling keycloak error response");
+        log.error("Received keycloak status: {} - {} ", response.getStatusCode(),
+            response.getStatusText());
+        errorHandler.accept(response);
+
       }
     };
   }
