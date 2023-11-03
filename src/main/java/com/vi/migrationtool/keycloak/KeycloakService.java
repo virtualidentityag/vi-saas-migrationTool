@@ -380,7 +380,7 @@ public class KeycloakService {
 
   private static ResponseErrorHandler nonFaultTolerantResponseErrorHandler() {
     return getResponseErrorHandler(response -> {
-      throw new IllegalStateException("Received exception calling keyclak API, migration will fail");
+      throw new IllegalStateException("Received exception calling keycloak API, migration will fail");
     });
   }
 
