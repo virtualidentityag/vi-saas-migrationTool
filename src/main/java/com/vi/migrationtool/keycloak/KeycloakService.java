@@ -379,9 +379,11 @@ public class KeycloakService {
   }
 
   private static ResponseErrorHandler nonFaultTolerantResponseErrorHandler() {
-    return getResponseErrorHandler(response -> {
-      throw new IllegalStateException("Received exception calling keycloak API, migration will fail");
-    });
+    return getResponseErrorHandler(
+        response -> {
+          throw new IllegalStateException(
+              "Received exception calling keycloak API, migration will fail");
+        });
   }
 
   private static ResponseErrorHandler getResponseErrorHandler(
@@ -395,10 +397,11 @@ public class KeycloakService {
       @Override
       public void handleError(ClientHttpResponse response) throws IOException {
         log.warn("Handling keycloak error response");
-        log.error("Received keycloak status: {} - {} ", response.getStatusCode(),
+        log.error(
+            "Received keycloak status: {} - {} ",
+            response.getStatusCode(),
             response.getStatusText());
         errorHandler.accept(response);
-
       }
     };
   }
