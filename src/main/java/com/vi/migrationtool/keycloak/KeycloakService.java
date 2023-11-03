@@ -375,12 +375,14 @@ public class KeycloakService {
   }
 
   private static ResponseErrorHandler faultTolerantResponseErrorHandler() {
-    return getResponseErrorHandler(response -> {});
+    return getResponseErrorHandler(
+        response -> log.error("Received error response from keycloak: " + response));
   }
 
   private static ResponseErrorHandler nonFaultTolerantResponseErrorHandler() {
     return getResponseErrorHandler(
         response -> {
+          log.error("Received response: " + response);
           throw new IllegalStateException(
               "Received exception calling keycloak API, migration will fail");
         });
@@ -391,7 +393,9 @@ public class KeycloakService {
     return new ResponseErrorHandler() {
       @Override
       public boolean hasError(ClientHttpResponse response) throws IOException {
-        return !response.getStatusCode().equals(HttpStatus.CONFLICT);
+        var statusCode = response.getStatusCode();
+        return (statusCode.is4xxClientError() || statusCode.is5xxServerError())
+            && !response.getStatusCode().equals(HttpStatus.CONFLICT);
       }
 
       @Override
