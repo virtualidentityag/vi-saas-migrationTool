@@ -8,7 +8,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.util.Lists;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +47,8 @@ public class KeycloakUserService {
     return getResponseErrorHandler(
         response -> {
           try {
-            String responseBody = StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8);
+            String responseBody =
+                StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8);
             log.error("Received response {}", responseBody);
             throw new IllegalStateException(
                 String.format(
