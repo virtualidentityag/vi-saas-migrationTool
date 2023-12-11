@@ -8,7 +8,6 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-/** Service for mail templates */
 @Service
 public class WeblateResourceLoader {
 
