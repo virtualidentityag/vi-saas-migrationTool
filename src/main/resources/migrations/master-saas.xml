@@ -25,5 +25,7 @@
   <!-- skip 0018_migrate_tenant_admins_to_set_user_admin_and_agency_admin_roles -->
   <include file="migrations/changeset/0019_add_counselling_relation_release_toggle/0019_add_counselling_relation_release_toggle.xml"/>
   <include file="migrations/changeset/0023_create_jitsi_technical_user/0023_create_jitsi_technical_user.xml"/>
+  <include file="migrations/changeset/0024_create_weblate_project/0024_create_weblate_project.xml"/>
+
 
 </databaseChangeLog>
