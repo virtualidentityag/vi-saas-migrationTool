@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "weblate.config")
 public class WeblateConfig {
 
-  private String serverUrl;
+  private String apiUrl;
   private String apiKey;
   private String projectName;
   private String slug;

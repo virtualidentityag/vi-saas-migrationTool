@@ -29,7 +29,7 @@ public class WeblateComponentService {
 
     String componentCreateJson = weblateResourceLoader.readResourceContentByName(componentName);
 
-    var url = weblateConfig.getServerUrl() + "/api/projects/" + projectName + "/components/";
+    var url = weblateConfig.getApiUrl() + "/projects/" + projectName + "/components/";
 
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.setErrorHandler(nonFaultTolerantResponseErrorHandler());
