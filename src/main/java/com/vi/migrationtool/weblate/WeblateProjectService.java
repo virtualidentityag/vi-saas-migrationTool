@@ -18,11 +18,11 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class WeblateProjectService {
 
-  private static final String API_PROJECTS = "/api/projects/";
+  private static final String PROJECTS = "/projects/";
   private final WeblateConfig weblateConfig;
 
   public String createProject(ProjectDTO projectDTO) {
-    var url = weblateConfig.getServerUrl() + API_PROJECTS;
+    var url = weblateConfig.getApiUrl() + PROJECTS;
 
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.setErrorHandler(
