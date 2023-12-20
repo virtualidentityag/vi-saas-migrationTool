@@ -17,7 +17,7 @@
     <include file="migrations/changeset/0011_add_notification_technical_keycloak_role/0011_add_notification_technical_keycloak_role.xml"/>
     <include file="migrations/changeset/0012_setup_rocketchat_read_receipts/0012_setup_rocketchat_read_receipts.xml"/>
     <include file="migrations/changeset/0013_add_videogroupchat_release_toggle/0013_add_videogroupchat_release_toggle.xml"/>
-    <include file="migrations/changeset/0014_import_dioceses_from_agency_to_tenant_service/0014_import_dioceses_from_agency_to_tenant_service.xml"/>
+    <!-- by default migration  0014_import_dioceses_from_agency_to_tenant_service/0014_import_dioceses_from_agency_to_tenant_service is not applied. This must be decided by each of the clients and activated if needed -->
     <include file="migrations/changeset/0015_create_jitsi_technical_keycloak_role/0015_create_jitsi_technical_keycloak_role.xml"/>
     <!-- by default migration 0015_add_groupchat_role_for_consultants is not applied. This must be decided by each of the clients and activated if needed -->
     <!-- by default migraiton 0016_migrate_consulting_types_description_to_topic. This must be decided by each of the clients and activated if needed -->
@@ -27,5 +27,7 @@
     <!-- by default migration 0020_disable_rocketchat_2fa is not applied. This must be decided by each of the clients and activated if needed -->
     <!-- by default migration 0021_add_custom_keycloak_attribute_to_users_with_role is not applied. This must be decided by each of the clients and activated if needed -->
     <!-- by default migration 0022_add_restricted_consultant_admin_keycloak_role is not applied. This must be decided by each of the clients and activated if needed -->
+    <!-- by default migration 0023_create_jitsi_technical_user is not applied. This must be decided by each of the clients and activated if needed -->
+    <include file="migrations/changeset/0024_create_weblate_project/0024_create_weblate_project.xml"/>
 
 </databaseChangeLog>
