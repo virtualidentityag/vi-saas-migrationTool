@@ -8,15 +8,17 @@
     </customChange>
   </changeSet>
 
-  <changeSet author="tkuzynow" id="create-weblate-mailservice-component">
+  <changeSet author="LS" id="create-weblate-mailing-component">
     <customChange class="com.vi.migrationtool.weblate.WeblateCreateComponentTask">
       <param name="componentName" value="mailing"/>
+      <param name="projectName" value="backend"/>
     </customChange>
   </changeSet>
 
-  <changeSet author="tkuzynow" id="create-weblate-frontend-component">
+  <changeSet author="LS" id="create-weblate-frontend-component">
     <customChange class="com.vi.migrationtool.weblate.WeblateCreateComponentTask">
       <param name="componentName" value="frontend"/>
+      <param name="projectName" value="frontend"/>
     </customChange>
   </changeSet>
 
