@@ -1,17 +1,17 @@
 package com.vi.migrationtool.keycloak;
 
+import static com.vi.migrationtool.keycloak.KeycloakConfig.ADMIN_REALMS;
+import static com.vi.migrationtool.keycloak.KeycloakErrorResponseHandler.getResponseErrorHandler;
 import static java.util.Objects.isNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +24,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -39,15 +36,16 @@ public class KeycloakService {
 
   private static final String SEARCH_PARAM = "search";
   private static final String MAX_USERS_TO_MIGRATE = "500";
-  private static final String ADMIN_REALMS = "/admin/realms/";
   private static final String PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG =
       "The provided role {} doesn't exists in keycloak, please create it first";
   private final KeycloakConfig keycloakConfig;
 
+  private final KeycloakLoginService keycloakLoginService;
+
   public void createRole(String roleName) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-    KeycloakLoginResponseDTO loginResponse = loginAdminUser();
+    KeycloakLoginResponseDTO loginResponse = keycloakLoginService.loginAdminUser();
     httpHeaders.setBearerAuth(loginResponse.getAccessToken());
     HttpEntity entity = new HttpEntity<>(getCreateRoleBody(roleName), httpHeaders);
     var createRoleUrl =
@@ -57,24 +55,10 @@ public class KeycloakService {
     restTemplate.postForEntity(createRoleUrl, entity, Void.class);
   }
 
-  public KeycloakLoginResponseDTO loginAdminUser() {
-    return loginUser(keycloakConfig.getAdminUsername(), keycloakConfig.getAdminPassword());
-  }
-
-  public KeycloakLoginResponseDTO loginUser(final String userName, final String password) {
-    var entity = loginRequest(userName, password);
-    var url =
-        keycloakConfig.getAuthServerUrl()
-            + "/realms/"
-            + keycloakConfig.getRealm()
-            + "/protocol/openid-connect/token";
-    return new RestTemplate().postForEntity(url, entity, KeycloakLoginResponseDTO.class).getBody();
-  }
-
   public void addRoleToUsers(final List<String> usernames, final String roleName) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-    KeycloakLoginResponseDTO loginResponse = loginAdminUser();
+    KeycloakLoginResponseDTO loginResponse = keycloakLoginService.loginAdminUser();
     httpHeaders.setBearerAuth(loginResponse.getAccessToken());
 
     Optional<RoleRepresentation> role = getRoleBy(roleName, httpHeaders);
@@ -91,7 +75,7 @@ public class KeycloakService {
       final String roleNameToSearchForUsers, final List<String> rolesNameToAdd) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-    KeycloakLoginResponseDTO loginResponse = loginAdminUser();
+    KeycloakLoginResponseDTO loginResponse = keycloakLoginService.loginAdminUser();
     httpHeaders.setBearerAuth(loginResponse.getAccessToken());
 
     List<KeycloakUser> keycloakUsers = getUsersWithRoleName(roleNameToSearchForUsers);
@@ -191,7 +175,7 @@ public class KeycloakService {
   public List<KeycloakUser> getUsersWithRoleName(final String roleName) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-    KeycloakLoginResponseDTO loginResponse = loginAdminUser();
+    KeycloakLoginResponseDTO loginResponse = keycloakLoginService.loginAdminUser();
     httpHeaders.setBearerAuth(loginResponse.getAccessToken());
     return getUsersWithRoleName(roleName, httpHeaders);
   }
@@ -262,17 +246,6 @@ public class KeycloakService {
         .toUriString();
   }
 
-  private HttpEntity<MultiValueMap<String, String>> loginRequest(String userName, String password) {
-    MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-    map.add("username", userName);
-    map.add("password", password);
-    map.add("client_id", keycloakConfig.getAdminClientId());
-    map.add("grant_type", "password");
-    var httpHeaders = new HttpHeaders();
-    httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-    return new HttpEntity<>(map, httpHeaders);
-  }
-
   private String getCreateRoleBody(String roleName) {
     try {
       JSONObject body = new JSONObject();
@@ -309,7 +282,7 @@ public class KeycloakService {
 
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-    KeycloakLoginResponseDTO loginResponse = loginAdminUser();
+    KeycloakLoginResponseDTO loginResponse = keycloakLoginService.loginAdminUser();
     httpHeaders.setBearerAuth(loginResponse.getAccessToken());
 
     Optional<RoleRepresentation> role = getRoleBy(roleName, httpHeaders);
@@ -386,27 +359,5 @@ public class KeycloakService {
           throw new IllegalStateException(
               "Received exception calling keycloak API, migration will fail");
         });
-  }
-
-  private static ResponseErrorHandler getResponseErrorHandler(
-      Consumer<ClientHttpResponse> errorHandler) {
-    return new ResponseErrorHandler() {
-      @Override
-      public boolean hasError(ClientHttpResponse response) throws IOException {
-        var statusCode = response.getStatusCode();
-        return (statusCode.is4xxClientError() || statusCode.is5xxServerError())
-            && !response.getStatusCode().equals(HttpStatus.CONFLICT);
-      }
-
-      @Override
-      public void handleError(ClientHttpResponse response) throws IOException {
-        log.warn("Handling keycloak error response");
-        log.error(
-            "Received keycloak status: {} - {} ",
-            response.getStatusCode(),
-            response.getStatusText());
-        errorHandler.accept(response);
-      }
-    };
   }
 }
