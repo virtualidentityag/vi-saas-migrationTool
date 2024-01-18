@@ -10,7 +10,7 @@
 
   <changeSet author="tkuzynow" id="create-weblate-mailservice-component">
     <customChange class="com.vi.migrationtool.weblate.WeblateCreateComponentTask">
-      <param name="componentName" value="mailservice"/>
+      <param name="componentName" value="mailing"/>
     </customChange>
   </changeSet>
 
