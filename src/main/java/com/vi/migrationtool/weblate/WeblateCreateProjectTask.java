@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 public class WeblateCreateProjectTask extends MigrationTasks {
 
   String projectName;
+  String slug;
 
   @Override
   public void execute(Database database) {
@@ -24,6 +25,6 @@ public class WeblateCreateProjectTask extends MigrationTasks {
   }
 
   private ProjectDTO fromWeblateConfig(WeblateConfig weblateConfig) {
-    return new ProjectDTO(projectName, weblateConfig.getWeb(), weblateConfig.getSlug());
+    return new ProjectDTO(projectName, weblateConfig.getWeb(), slug);
   }
 }

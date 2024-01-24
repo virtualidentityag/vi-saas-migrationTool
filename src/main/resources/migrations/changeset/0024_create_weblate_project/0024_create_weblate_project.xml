@@ -3,15 +3,17 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-  <changeSet author="leandroSilva" id="create-weblate-project">
+  <changeSet author="leandroSilva" id="create-weblate-project-backend">
     <customChange class="com.vi.migrationtool.weblate.WeblateCreateProjectTask">
       <param name="projectName" value="backend"/>
+      <param name="slug" value="backend"/>
     </customChange>
   </changeSet>
 
-  <changeSet author="leandroSilva" id="create-weblate-project">
+  <changeSet author="leandroSilva" id="create-weblate-project-frontend">
     <customChange class="com.vi.migrationtool.weblate.WeblateCreateProjectTask">
       <param name="projectName" value="frontend"/>
+      <param name="slug" value="frontend"/>
     </customChange>
   </changeSet>
 
@@ -22,30 +24,30 @@
     </customChange>
   </changeSet>
 
-  <changeSet author="leandroSilva" id="create-weblate-frontend-component">
+  <changeSet author="leandroSilva" id="create-weblate-frontend-component-common">
     <customChange class="com.vi.migrationtool.weblate.WeblateCreateComponentTask">
       <param name="componentName" value="common"/>
       <param name="projectName" value="frontend"/>
     </customChange>
   </changeSet>
 
-  <changeSet author="leandroSilva" id="create-weblate-frontend-component">
+  <changeSet author="leandroSilva" id="create-weblate-frontend-component-languages">
     <customChange class="com.vi.migrationtool.weblate.WeblateCreateComponentTask">
       <param name="componentName" value="languages"/>
       <param name="projectName" value="frontend"/>
     </customChange>
   </changeSet>
 
-  <changeSet author="leandroSilva" id="create-weblate-frontend-component">
+  <changeSet author="leandroSilva" id="create-weblate-frontend-component-consultingTypes">
     <customChange class="com.vi.migrationtool.weblate.WeblateCreateComponentTask">
       <param name="componentName" value="consultingTypes"/>
       <param name="projectName" value="frontend"/>
     </customChange>
   </changeSet>
 
-  <changeSet author="leandroSilva" id="create-weblate-frontend-component">
+  <changeSet author="leandroSilva" id="create-weblate-frontend-component-agency">
     <customChange class="com.vi.migrationtool.weblate.WeblateCreateComponentTask">
-      <param name="componentName" value="agencies"/>
+      <param name="componentName" value="agency"/>
       <param name="projectName" value="frontend"/>
     </customChange>
   </changeSet>

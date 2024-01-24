@@ -9,6 +9,5 @@ public class WeblateConfig {
 
   private String apiUrl;
   private String apiKey;
-  private String slug;
   private String web;
 }
