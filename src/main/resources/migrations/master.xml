@@ -28,6 +28,8 @@
     <!-- by default migration 0021_add_custom_keycloak_attribute_to_users_with_role is not applied. This must be decided by each of the clients and activated if needed -->
     <!-- by default migration 0022_add_restricted_consultant_admin_keycloak_role is not applied. This must be decided by each of the clients and activated if needed -->
     <!-- by default migration 0023_create_jitsi_technical_user is not applied. This must be decided by each of the clients and activated if needed -->
-    <include file="migrations/changeset/0024_create_weblate_project/0024_create_weblate_project.xml"/>
+    <!-- by default migration 0024_create_weblate_project is not applied. This must be decided by each of the clients and activated if needed -->
+    <!-- by default migration 0025_fix_rocketchat_user_id_inconsistency is not applied. This must be decided by each of the clients and activated if needed -->
+
 
 </databaseChangeLog>
