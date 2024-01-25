@@ -8,6 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "keycloak.config")
 public class KeycloakConfig {
 
+  public static final String ADMIN_REALMS = "/admin/realms/";
+
   @Value("${keycloak.auth-server-url}")
   private String authServerUrl;
 
