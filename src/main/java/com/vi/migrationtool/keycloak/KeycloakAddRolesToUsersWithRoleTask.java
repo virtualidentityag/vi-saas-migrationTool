@@ -8,12 +8,16 @@ import lombok.Data;
 
 @Data
 public class KeycloakAddRolesToUsersWithRoleTask extends MigrationTasks {
+  private static final String SPLIT_CHAR = ",";
   private String roleNameToSearchForUsers;
-  private List<String> roleNames;
+  private String roleNames;
 
   @Override
   public void execute(Database database) {
-    KeycloakService keycloakService = BeanAwareSpringLiquibase.getBean(KeycloakService.class);
-    keycloakService.addRolesToUsersWithRoleName(roleNameToSearchForUsers, roleNames);
+    if (roleNames != null) {
+      KeycloakService keycloakService = BeanAwareSpringLiquibase.getBean(KeycloakService.class);
+      keycloakService.addRolesToUsersWithRoleName(
+          roleNameToSearchForUsers, List.of(roleNames.split(SPLIT_CHAR)));
+    }
   }
 }

@@ -1,16 +1,18 @@
 package com.vi.migrationtool.keycloak;
 
+import static com.vi.migrationtool.keycloak.KeycloakConfig.ADMIN_REALMS;
+import static com.vi.migrationtool.keycloak.KeycloakErrorResponseHandler.getResponseErrorHandler;
 import static java.util.Objects.isNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -22,10 +24,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -37,50 +36,38 @@ public class KeycloakService {
 
   private static final String SEARCH_PARAM = "search";
   private static final String MAX_USERS_TO_MIGRATE = "500";
-  private static final String ADMIN_REALMS = "/admin/realms/";
+  private static final String PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG =
+      "The provided role {} doesn't exists in keycloak, please create it first";
   private final KeycloakConfig keycloakConfig;
+
+  private final KeycloakLoginService keycloakLoginService;
 
   public void createRole(String roleName) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-    KeycloakLoginResponseDTO loginResponse = loginAdminUser();
+    KeycloakLoginResponseDTO loginResponse = keycloakLoginService.loginAdminUser();
     httpHeaders.setBearerAuth(loginResponse.getAccessToken());
     HttpEntity entity = new HttpEntity<>(getCreateRoleBody(roleName), httpHeaders);
     var createRoleUrl =
         keycloakConfig.getAuthServerUrl() + ADMIN_REALMS + keycloakConfig.getRealm() + "/roles";
     var restTemplate = new RestTemplate();
-    restTemplate.setErrorHandler(getResponseErrorHandler());
+    restTemplate.setErrorHandler(nonFaultTolerantResponseErrorHandler());
     restTemplate.postForEntity(createRoleUrl, entity, Void.class);
-  }
-
-  public KeycloakLoginResponseDTO loginAdminUser() {
-    return loginUser(keycloakConfig.getAdminUsername(), keycloakConfig.getAdminPassword());
-  }
-
-  public KeycloakLoginResponseDTO loginUser(final String userName, final String password) {
-    var entity = loginRequest(userName, password);
-    var url =
-        keycloakConfig.getAuthServerUrl()
-            + "/realms/"
-            + keycloakConfig.getRealm()
-            + "/protocol/openid-connect/token";
-    return new RestTemplate().postForEntity(url, entity, KeycloakLoginResponseDTO.class).getBody();
   }
 
   public void addRoleToUsers(final List<String> usernames, final String roleName) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-    KeycloakLoginResponseDTO loginResponse = loginAdminUser();
+    KeycloakLoginResponseDTO loginResponse = keycloakLoginService.loginAdminUser();
     httpHeaders.setBearerAuth(loginResponse.getAccessToken());
 
     Optional<RoleRepresentation> role = getRoleBy(roleName, httpHeaders);
     if (role.isEmpty()) {
-      log.error(
-          "The provided role {} doesn't exists in keycloak, please create it first", roleName);
+      log.error(PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG, roleName);
     }
 
     var restTemplate = new RestTemplate();
-    restTemplate.setErrorHandler(getResponseErrorHandler());
+    restTemplate.setErrorHandler(faultTolerantResponseErrorHandler());
     usernames.forEach(username -> addRoleToUser(username, role.get(), httpHeaders, restTemplate));
   }
 
@@ -88,7 +75,7 @@ public class KeycloakService {
       final String roleNameToSearchForUsers, final List<String> rolesNameToAdd) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-    KeycloakLoginResponseDTO loginResponse = loginAdminUser();
+    KeycloakLoginResponseDTO loginResponse = keycloakLoginService.loginAdminUser();
     httpHeaders.setBearerAuth(loginResponse.getAccessToken());
 
     List<KeycloakUser> keycloakUsers = getUsersWithRoleName(roleNameToSearchForUsers);
@@ -98,7 +85,7 @@ public class KeycloakService {
           roleNameToSearchForUsers);
     }
     var restTemplate = new RestTemplate();
-    restTemplate.setErrorHandler(getResponseErrorHandler());
+    restTemplate.setErrorHandler(faultTolerantResponseErrorHandler());
     rolesNameToAdd.stream()
         .forEach(
             role -> tryToAddRoleToKeycloakUser(role, keycloakUsers, httpHeaders, restTemplate));
@@ -111,8 +98,7 @@ public class KeycloakService {
       RestTemplate restTemplate) {
     Optional<RoleRepresentation> role = getRoleBy(roleNameDoAdd, httpHeaders);
     if (role.isEmpty()) {
-      log.error(
-          "The provided role {} doesn't exists in keycloak, please create it first", roleNameDoAdd);
+      log.error(PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG, roleNameDoAdd);
     }
     keycloakUsers.forEach(
         user -> callKeycloakToAddRoleToUser(role.get(), httpHeaders, restTemplate, user));
@@ -189,7 +175,7 @@ public class KeycloakService {
   public List<KeycloakUser> getUsersWithRoleName(final String roleName) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-    KeycloakLoginResponseDTO loginResponse = loginAdminUser();
+    KeycloakLoginResponseDTO loginResponse = keycloakLoginService.loginAdminUser();
     httpHeaders.setBearerAuth(loginResponse.getAccessToken());
     return getUsersWithRoleName(roleName, httpHeaders);
   }
@@ -260,17 +246,6 @@ public class KeycloakService {
         .toUriString();
   }
 
-  private HttpEntity<MultiValueMap<String, String>> loginRequest(String userName, String password) {
-    MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-    map.add("username", userName);
-    map.add("password", password);
-    map.add("client_id", keycloakConfig.getAdminClientId());
-    map.add("grant_type", "password");
-    var httpHeaders = new HttpHeaders();
-    httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-    return new HttpEntity<>(map, httpHeaders);
-  }
-
   private String getCreateRoleBody(String roleName) {
     try {
       JSONObject body = new JSONObject();
@@ -290,17 +265,99 @@ public class KeycloakService {
     }
   }
 
-  private static ResponseErrorHandler getResponseErrorHandler() {
-    return new ResponseErrorHandler() {
-      @Override
-      public boolean hasError(ClientHttpResponse response) throws IOException {
-        return !response.getStatusCode().equals(HttpStatus.CONFLICT);
-      }
+  public List<UsersWithRole> addCustomAttributeToUsersWithRole(
+      String customAttribute, Long value, List<String> roleNames) {
+    if (roleNames != null) {
+      return roleNames.stream()
+          .map(roleName -> addCustomAttributeToUsersWithRole(customAttribute, value, roleName))
+          .collect(Collectors.toList());
+    } else {
+      log.warn("No role names provided: {}", this.getClass().getSimpleName());
+      return Collections.emptyList();
+    }
+  }
 
-      @Override
-      public void handleError(ClientHttpResponse response) throws IOException {
-        log.warn("Handling keycloak error response");
-      }
-    };
+  private UsersWithRole addCustomAttributeToUsersWithRole(
+      String customAttribute, Long value, String roleName) {
+
+    var httpHeaders = new HttpHeaders();
+    httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+    KeycloakLoginResponseDTO loginResponse = keycloakLoginService.loginAdminUser();
+    httpHeaders.setBearerAuth(loginResponse.getAccessToken());
+
+    Optional<RoleRepresentation> role = getRoleBy(roleName, httpHeaders);
+    if (role.isEmpty()) {
+      log.error(PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG, roleName);
+    }
+
+    var restTemplate = new RestTemplate();
+    restTemplate.setErrorHandler(faultTolerantResponseErrorHandler());
+    var users = getUsersWithRoleName(roleName, httpHeaders);
+    var updatedUsers =
+        users.stream()
+            .map(
+                user ->
+                    addCustomAttributeToUserIfDoesNotExist(
+                        customAttribute, value, httpHeaders, restTemplate, user))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
+
+    return new UsersWithRole(roleName, updatedUsers);
+  }
+
+  private Optional<String> addCustomAttributeToUserIfDoesNotExist(
+      String customAttribute,
+      Long customAttributeValue,
+      HttpHeaders httpHeaders,
+      RestTemplate restTemplate,
+      KeycloakUser user) {
+    var updateUserRolesUrl =
+        keycloakConfig.getAuthServerUrl()
+            + ADMIN_REALMS
+            + keycloakConfig.getRealm()
+            + "/users/"
+            + user.getId();
+
+    Map<String, Object> attributes = (Map<String, Object>) user.getAttributes();
+    if (attributes.containsKey(customAttribute)) {
+      log.info(
+          "User {} already has the custom attribute {}, will not override it's value",
+          user.getUsername(),
+          customAttribute);
+      return Optional.empty();
+    }
+    attributes.put(customAttribute, customAttributeValue);
+    try {
+      restTemplate.exchange(
+          updateUserRolesUrl, HttpMethod.PUT, new HttpEntity<>(user, httpHeaders), Void.class);
+    } catch (Exception e) {
+      log.error(
+          "Error while adding custom attribute {} = {}, to user {}",
+          customAttribute,
+          customAttributeValue,
+          user.getUsername());
+      return Optional.empty();
+    }
+    log.info(
+        "Added keycloak attribute {} = {}, to user {}",
+        customAttribute,
+        customAttributeValue,
+        user.getUsername());
+    return Optional.of(user.getId());
+  }
+
+  private static ResponseErrorHandler faultTolerantResponseErrorHandler() {
+    return getResponseErrorHandler(
+        response -> log.error("Received error response from keycloak: " + response));
+  }
+
+  private static ResponseErrorHandler nonFaultTolerantResponseErrorHandler() {
+    return getResponseErrorHandler(
+        response -> {
+          log.error("Received response: " + response);
+          throw new IllegalStateException(
+              "Received exception calling keycloak API, migration will fail");
+        });
   }
 }
