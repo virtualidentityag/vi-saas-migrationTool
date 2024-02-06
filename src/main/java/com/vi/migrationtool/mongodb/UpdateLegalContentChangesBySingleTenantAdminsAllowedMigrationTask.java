@@ -11,7 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Data
 @Slf4j
-public class UpdateLegalContentChangesBySingleTenantAdminsAllowedMigrationTask extends MigrationTasks {
+public class UpdateLegalContentChangesBySingleTenantAdminsAllowedMigrationTask
+    extends MigrationTasks {
 
   private Boolean value;
 
@@ -31,7 +32,8 @@ public class UpdateLegalContentChangesBySingleTenantAdminsAllowedMigrationTask e
   private void applyMigration(
       ApplicationSettingService applicationSettingService,
       ApplicationSettingsEntity applicationSettingsEntity) {
-    LegalContentChangesBySingleTenantAdminsAllowed toggle = new LegalContentChangesBySingleTenantAdminsAllowed();
+    LegalContentChangesBySingleTenantAdminsAllowed toggle =
+        new LegalContentChangesBySingleTenantAdminsAllowed();
     toggle.setValue(value);
     applicationSettingsEntity.setLegalContentChangesBySingleTenantAdminsAllowed(toggle);
     applicationSettingService.updateApplicationSettings(applicationSettingsEntity);
