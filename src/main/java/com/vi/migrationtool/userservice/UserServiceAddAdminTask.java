@@ -27,7 +27,7 @@ public class UserServiceAddAdminTask extends MigrationTasks {
   public void execute(Database database) {
 
     KeycloakService keycloakService = BeanAwareSpringLiquibase.getBean(KeycloakService.class);
-    List<KeycloakUser> adminUsersWithRoleName = keycloakService.getUsersWithRoleName(roleName);
+    List<KeycloakUser> adminUsersWithRoleName = keycloakService.getUsersWithRoleName(roleName, 1);
     log.info("Found users with role name of size: {}", adminUsersWithRoleName.size());
     JdbcTemplate jdbcTemplate = BeanAwareSpringLiquibase.getBean(JdbcTemplate.class);
     createTenantAdminUsersIfNotExist(adminUsersWithRoleName, jdbcTemplate);
