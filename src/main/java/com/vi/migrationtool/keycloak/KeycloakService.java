@@ -35,7 +35,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class KeycloakService {
 
   private static final String SEARCH_PARAM = "search";
-  private static final String MAX_USERS_TO_MIGRATE = "500";
+  private static final String MAX_USERS_TO_MIGRATE = "850";
   private static final String PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG =
       "The provided role {} doesn't exists in keycloak, please create it first";
   private final KeycloakConfig keycloakConfig;
