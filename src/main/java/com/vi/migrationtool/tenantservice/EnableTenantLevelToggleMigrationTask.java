@@ -30,13 +30,20 @@ public class EnableTenantLevelToggleMigrationTask extends MigrationTasks {
                 + featureToggleName
                 + "\":false','\""
                 + featureToggleName
-                + "\":true') where settings like '%" + featureToggleName + ":false%';");
+                + "\":true') where settings like '%"
+                + featureToggleName
+                + ":false%';");
 
     log.info("Updated toggle value for {} tenants", updatedTenants[0]);
 
-    int[] tenantsWithAddedSettings = tenantServiceJdbcTemplate.batchUpdate(
-        "update tenant set settings = REPLACE(settings, '}',',\"" + featureToggleName + "\":true}')"
-            + " where settings not like '%" + featureToggleName + "%';");
+    int[] tenantsWithAddedSettings =
+        tenantServiceJdbcTemplate.batchUpdate(
+            "update tenant set settings = REPLACE(settings, '}',',\""
+                + featureToggleName
+                + "\":true}')"
+                + " where settings not like '%"
+                + featureToggleName
+                + "%';");
 
     log.info("Added feature toggle to {} tenants", tenantsWithAddedSettings[0]);
   }
