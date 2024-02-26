@@ -31,7 +31,9 @@ public class EnableTenantLevelToggleMigrationTask extends MigrationTasks {
                 + "\":false','\""
                 + featureToggleName
                 + "\":true') where settings like '%"
+                + "\""
                 + featureToggleName
+                + "\""
                 + ":false%';");
 
     log.info("Updated toggle value for {} tenants", updatedTenants[0]);
