@@ -31,5 +31,5 @@
     <!-- by default migration 0024_create_weblate_project is not applied. This must be decided by each of the clients and activated if needed -->
     <!-- by default migration 0025_fix_rocketchat_user_id_inconsistency is not applied. This must be decided by each of the clients and activated if needed -->
 
-
-</databaseChangeLog>
+    <!-- by default migration 0026_deactivate_legal_content_changes_by_single_tenant_admin_allowed is not applied. This must be decided by each of the clients and activated if needed -->
+    </databaseChangeLog>
