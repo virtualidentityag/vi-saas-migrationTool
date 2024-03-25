@@ -24,5 +24,5 @@
     <include file="migrations/changeset/0018_migrate_tenant_admins_to_set_user_admin_and_agency_admin_roles/0018_migrate_tenant_admins_to_set_user_admin_and_agency_admin_roles.xml"/>
     <include file="migrations/changeset/0021_add_custom_keycloak_attribute_to_users_with_role/0021_add_custom_keycloak_attribute_to_users_with_role.xml"/>
     <include file="migrations/changeset/0023_create_jitsi_technical_user/0023_create_jitsi_technical_user.xml"/>
-    <!-- todo   <include file="migrations/changeset/0024_create_weblate_project/0024_create_weblate_project.xml"/>-->
+    <include file="migrations/changeset/0024_create_weblate_project/0024_create_weblate_project.xml"/>
 </databaseChangeLog>
