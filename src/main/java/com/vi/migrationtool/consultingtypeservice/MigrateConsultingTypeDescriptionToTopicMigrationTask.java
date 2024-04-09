@@ -56,7 +56,8 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
     // Format the current date and time
     String formattedCurrentDateTime = currentDateTime.format(formatter);
     consultingTypeServiceJdbcTemplate.batchUpdate(
-        "insert into topic (id, tenant_id, name, description, status, create_date, update_date, internal_identifier, fallback_agency_id, fallback_url, send_next_step_message, titles_short, titles_long, titles_welcome, titles_dropdown, slug) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        "insert into topic (id, tenant_id, name, description, status, create_date, update_date, internal_identifier, fallback_agency_id, fallback_url, send_next_step_message, titles_short, titles_long, "
+            + "titles_welcome, titles_dropdown, slug) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         consultingTypes.stream()
             .filter(ct -> !topicExistsById(consultingTypeServiceJdbcTemplate, ct.getId()))
             .map(
