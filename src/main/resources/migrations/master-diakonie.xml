@@ -13,7 +13,7 @@
     <!-- skip (tbd) 0007_add_view_room_permission_to_technical_role_rocketchat.xml -->
     <include file="migrations/changeset/0008_remove_lockedAgencies/0008_remove_lockedAgencies_attribute.xml"/>
     <!-- skip (tbd) 0009_add_documentation_enabled_applevel_setting.xml -->
-    <!-- skip (tbd) 0010_add_notification_and_tenant_creation_release_toggles.xml -->
+    <include file="migrations/changeset/0010_add_notification_and_tenant_creation_release_toggles/0010_add_notification_and_tenant_creation_release_toggles.xml"/>
     <!-- skip (tbd) 0011_add_notification_technical_keycloak_role.xml -->
     <!-- skip (tbd) 0012_setup_rocketchat_read_receipts.xml -->
     <!-- skip (tbd) 0013_add_videogroupchat_release_toggle.xml -->
