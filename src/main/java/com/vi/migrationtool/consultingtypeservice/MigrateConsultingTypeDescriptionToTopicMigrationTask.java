@@ -95,13 +95,18 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
 
   private void addTopicGroupIfNeeded(ConsultingTypeEntity consultingTypeEntity) {
     var topicGroups = consultingTypeEntity.getGroups();
+
     topicGroups.forEach(
         topicGroup ->
             topicGroupMigrationService
-                .insertTopicGroupIfNotExists(topicGroup)
+                .insertTopicGroupIfNotExists(convertToTranslateableJson(topicGroup))
                 .ifPresent(
                     topicGroupId ->
                         topicGroupMigrationService.createTopicGroupRelationIfNotExists(
                             topicGroupId, consultingTypeEntity.getId())));
+  }
+
+  private String convertToTranslateableJson(String topicGroup) {
+    return "{ \"de\": \"" + topicGroup + "\"}";
   }
 }
