@@ -74,9 +74,9 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
                       null,
                       ct.getUrls() != null ? ct.getUrls().getRegistrationPostcodeFallbackUrl() : "",
                       ct.getSendFurtherStepsMessage(),
-                      ct.getTitles().getShort(),
-                      ct.getTitles().getLong(),
-                      ct.getTitles().getWelcome(),
+                        "{ \"de\": \"" + ct.getTitles().getShort() + "\"}",
+                        "{ \"de\": \"" + ct.getTitles().getShort() + "\"}",
+                        ct.getTitles().getWelcome(),
                       ct.getTitles().getRegistrationDropdown(),
                       ct.getSlug()
                     })
