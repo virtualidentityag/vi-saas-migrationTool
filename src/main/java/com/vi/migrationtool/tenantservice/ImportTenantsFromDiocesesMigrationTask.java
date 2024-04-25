@@ -76,12 +76,10 @@ public class ImportTenantsFromDiocesesMigrationTask extends MigrationTasks {
             "select id, name from tenant",
             (rs, rowNum) -> new TenantIdAndName(rs.getInt("id"), rs.getString("name")));
 
-    Predicate<Diocese> newTenantsOnly =
-        d -> tenants.stream().noneMatch(tenant -> tenant.name.equals(d.name));
+
     agencyJdbcTemplate.batchUpdate(
         "update agency set tenant_id = ? where diocese_id = ?",
         dioceses.stream()
-            .filter(newTenantsOnly)
             .map(
                 d ->
                     new Object[] {
