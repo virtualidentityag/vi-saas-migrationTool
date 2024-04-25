@@ -56,7 +56,8 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
     // Format the current date and time
     String formattedCurrentDateTime = currentDateTime.format(formatter);
     consultingTypeServiceJdbcTemplate.batchUpdate(
-        "insert into topic (id, tenant_id, name, description, status, create_date, update_date, internal_identifier, fallback_agency_id, fallback_url, send_next_step_message, titles_short, titles_long, titles_welcome, titles_dropdown, slug) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        "insert into topic (id, tenant_id, name, description, status, create_date, update_date, internal_identifier, fallback_agency_id, fallback_url, send_next_step_message, titles_short, titles_long, "
+            + "titles_welcome, titles_dropdown, slug) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         consultingTypes.stream()
             .filter(ct -> !topicExistsById(consultingTypeServiceJdbcTemplate, ct.getId()))
             .map(
@@ -73,9 +74,9 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
                       null,
                       ct.getUrls() != null ? ct.getUrls().getRegistrationPostcodeFallbackUrl() : "",
                       ct.getSendFurtherStepsMessage(),
-                      ct.getTitles().getShort(),
-                      ct.getTitles().getLong(),
-                      ct.getTitles().getWelcome(),
+                        "{ \"de\": \"" + ct.getTitles().getShort() + "\"}",
+                        "{ \"de\": \"" + ct.getTitles().getLong() + "\"}",
+                        ct.getTitles().getWelcome(),
                       ct.getTitles().getRegistrationDropdown(),
                       ct.getSlug()
                     })
@@ -94,13 +95,18 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
 
   private void addTopicGroupIfNeeded(ConsultingTypeEntity consultingTypeEntity) {
     var topicGroups = consultingTypeEntity.getGroups();
+
     topicGroups.forEach(
         topicGroup ->
             topicGroupMigrationService
-                .insertTopicGroupIfNotExists(topicGroup)
+                .insertTopicGroupIfNotExists(convertToTranslateableJson(topicGroup))
                 .ifPresent(
                     topicGroupId ->
                         topicGroupMigrationService.createTopicGroupRelationIfNotExists(
                             topicGroupId, consultingTypeEntity.getId())));
+  }
+
+  private String convertToTranslateableJson(String topicGroup) {
+    return "{ \"de\": \"" + topicGroup + "\"}";
   }
 }

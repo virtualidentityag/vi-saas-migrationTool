@@ -6,7 +6,9 @@ import static java.util.Objects.isNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.util.Lists;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +37,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class KeycloakService {
 
   private static final String SEARCH_PARAM = "search";
-  private static final String MAX_USERS_TO_MIGRATE = "500";
+  private static final short USER_PAGE_SIZE = 500;
   private static final String PROVIDED_ROLE_DOESNT_EXISTS_IN_KEYCLOAK_MSG =
       "The provided role {} doesn't exists in keycloak, please create it first";
   private final KeycloakConfig keycloakConfig;
@@ -78,7 +80,15 @@ public class KeycloakService {
     KeycloakLoginResponseDTO loginResponse = keycloakLoginService.loginAdminUser();
     httpHeaders.setBearerAuth(loginResponse.getAccessToken());
 
-    List<KeycloakUser> keycloakUsers = getUsersWithRoleName(roleNameToSearchForUsers);
+    var pageNumber = 1;
+    var users = getUsersWithRoleName(roleNameToSearchForUsers, pageNumber);
+    List<KeycloakUser> keycloakUsers = Lists.newArrayList();
+    while (!users.isEmpty()) {
+      keycloakUsers.addAll(users);
+      pageNumber++;
+      users = getUsersWithRoleName(roleNameToSearchForUsers, pageNumber);
+    }
+
     if (keycloakUsers.isEmpty()) {
       log.info(
           "No users found with the given role {}. Migration will not be applied",
@@ -172,23 +182,25 @@ public class KeycloakService {
     return List.of(response.getBody());
   }
 
-  public List<KeycloakUser> getUsersWithRoleName(final String roleName) {
+  public List<KeycloakUser> getUsersWithRoleName(final String roleName, int pageNumberedFromOne) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
     KeycloakLoginResponseDTO loginResponse = keycloakLoginService.loginAdminUser();
     httpHeaders.setBearerAuth(loginResponse.getAccessToken());
-    return getUsersWithRoleName(roleName, httpHeaders);
+    return getUsersWithRoleName(roleName, getFirstElementIndex(pageNumberedFromOne), httpHeaders);
   }
 
   private List<KeycloakUser> getUsersWithRoleName(
-      final String roleName, final HttpHeaders httpHeaders) {
+      final String roleName, final int firstElementIndex, final HttpHeaders httpHeaders) {
 
     var url =
         keycloakConfig.getAuthServerUrl()
             + "/admin/realms/online-beratung/roles/"
             + roleName
-            + "/users?first=0&max="
-            + MAX_USERS_TO_MIGRATE;
+            + "/users?first="
+            + firstElementIndex
+            + "&max="
+            + USER_PAGE_SIZE;
     var getUsersBySearchTermURL = getUrl(url);
 
     HttpEntity requestEntity = new HttpEntity<>(httpHeaders);
@@ -202,6 +214,7 @@ public class KeycloakService {
             new Object[] {});
     if (isNull(response.getBody())) {
       log.warn("No user found in keycloak using search param {}", getUsersBySearchTermURL);
+      return Lists.newArrayList();
     }
     return List.of(response.getBody());
   }
@@ -292,18 +305,39 @@ public class KeycloakService {
 
     var restTemplate = new RestTemplate();
     restTemplate.setErrorHandler(faultTolerantResponseErrorHandler());
-    var users = getUsersWithRoleName(roleName, httpHeaders);
-    var updatedUsers =
-        users.stream()
-            .map(
-                user ->
-                    addCustomAttributeToUserIfDoesNotExist(
-                        customAttribute, value, httpHeaders, restTemplate, user))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(Collectors.toList());
+
+    Collection<String> updatedUsers = Lists.newArrayList();
+    var pageNumber = 1;
+    var users = getUsersWithRoleName(roleName, getFirstElementIndex(pageNumber));
+    while (!users.isEmpty()) {
+      var migratedUsersPage =
+          addCustomAttributeToUsers(customAttribute, value, httpHeaders, restTemplate, users);
+      pageNumber++;
+      updatedUsers.addAll(migratedUsersPage);
+      users = getUsersWithRoleName(roleName, pageNumber);
+    }
 
     return new UsersWithRole(roleName, updatedUsers);
+  }
+
+  private List<String> addCustomAttributeToUsers(
+      String customAttribute,
+      Long value,
+      HttpHeaders httpHeaders,
+      RestTemplate restTemplate,
+      List<KeycloakUser> users) {
+    return users.stream()
+        .map(
+            user ->
+                addCustomAttributeToUserIfDoesNotExist(
+                    customAttribute, value, httpHeaders, restTemplate, user))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .collect(Collectors.toList());
+  }
+
+  private int getFirstElementIndex(int pageNumberedFromOne) {
+    return (pageNumberedFromOne - 1) * USER_PAGE_SIZE;
   }
 
   private Optional<String> addCustomAttributeToUserIfDoesNotExist(

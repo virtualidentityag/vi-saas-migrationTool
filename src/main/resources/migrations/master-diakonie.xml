@@ -4,11 +4,25 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
-
+    <!-- skip (already done) 0001_setup_keycloak_roles.xml -->
+    <!-- skip (tbd) 0002_setup_rocketchat_delete_message_config.xml -->
+    <include file="migrations\changeset\0003_add_tenant_can_edit_legaltexts_applevel_setting\0003_add_tenant_can_edit_legaltexts_applevel_setting.xml"/>
+    <!-- skip 0004_add_topic_admin_role_to_super_admin_user.xml -->
+    <!-- skip (tbd) 0005_add_permission_to_technical_role_rocketchat.xml -->
+    <!-- skip (tbd) 0006_create_admin_user_table_entries_for_existing_admins.xml -->
+    <!-- skip (tbd) 0007_add_view_room_permission_to_technical_role_rocketchat.xml -->
     <include file="migrations/changeset/0008_remove_lockedAgencies/0008_remove_lockedAgencies_attribute.xml"/>
+    <!-- skip (tbd) 0009_add_documentation_enabled_applevel_setting.xml -->
+    <include file="migrations/changeset/0010_add_notification_and_tenant_creation_release_toggles/0010_add_notification_and_tenant_creation_release_toggles.xml"/>
+    <!-- skip (tbd) 0011_add_notification_technical_keycloak_role.xml -->
+    <!-- skip (tbd) 0012_setup_rocketchat_read_receipts.xml -->
+    <!-- skip (tbd) 0013_add_videogroupchat_release_toggle.xml -->
     <include file="migrations/changeset/0014_import_dioceses_from_agency_to_tenant_service/0014_import_dioceses_from_agency_to_tenant_service.xml"/>
+    <include file="migrations/changeset/0015_create_jitsi_technical_keycloak_role/0015_create_jitsi_technical_keycloak_role.xml"/>
     <include file="migrations/changeset/0016_migrate_consulting_types_description_to_topic/0016_migrate_consulting_types_description_to_topic.xml"/>
+    <!-- -->
     <include file="migrations/changeset/0018_migrate_tenant_admins_to_set_user_admin_and_agency_admin_roles/0018_migrate_tenant_admins_to_set_user_admin_and_agency_admin_roles.xml"/>
     <include file="migrations/changeset/0021_add_custom_keycloak_attribute_to_users_with_role/0021_add_custom_keycloak_attribute_to_users_with_role.xml"/>
+    <include file="migrations/changeset/0023_create_jitsi_technical_user/0023_create_jitsi_technical_user.xml"/>
     <include file="migrations/changeset/0024_create_weblate_project/0024_create_weblate_project.xml"/>
 </databaseChangeLog>
