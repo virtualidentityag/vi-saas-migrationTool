@@ -119,7 +119,7 @@ public class ImportTenantsFromDiocesesMigrationTask extends MigrationTasks {
 
   private List<Diocese> getAllDiocesesFromAgencyDB(JdbcTemplate agencyJdbcTemplate) {
     return agencyJdbcTemplate.query(
-        "select name id, from " + dioceseTableName,
+        "select name, id from " + dioceseTableName,
         (rs, rowNum) -> new Diocese(rs.getInt("id"), rs.getString("name")));
   }
 
