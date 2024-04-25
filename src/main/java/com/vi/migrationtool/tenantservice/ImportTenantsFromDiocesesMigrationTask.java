@@ -3,7 +3,6 @@ package com.vi.migrationtool.tenantservice;
 import com.vi.migrationtool.common.MigrationTasks;
 import com.vi.migrationtool.config.BeanAwareSpringLiquibase;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import liquibase.database.Database;
 import lombok.Builder;
@@ -75,7 +74,6 @@ public class ImportTenantsFromDiocesesMigrationTask extends MigrationTasks {
         tenantServiceJdbcTemplate.query(
             "select id, name from tenant",
             (rs, rowNum) -> new TenantIdAndName(rs.getInt("id"), rs.getString("name")));
-
 
     agencyJdbcTemplate.batchUpdate(
         "update agency set tenant_id = ? where diocese_id = ?",
