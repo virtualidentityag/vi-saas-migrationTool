@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -33,6 +34,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Service
 @RequiredArgsConstructor
 public class KeycloakUserService {
+
   private final KeycloakConfig keycloakConfig;
 
   private final KeycloakLoginService keycloakLoginService;
@@ -82,6 +84,71 @@ public class KeycloakUserService {
       log.warn("No user found in keycloak using search param {}", getUsersBySearchTermURL);
     }
     return List.of(response.getBody());
+  }
+
+  private Optional<KeycloakUser> getUsersWithUserId(
+      final String userId, final HttpHeaders httpHeaders) {
+
+    var url = keycloakConfig.getAuthServerUrl() + "/admin/realms/online-beratung/users/" + userId;
+
+    var usersWithIdUrl = getUrl(url);
+
+    HttpEntity requestEntity = new HttpEntity<>(httpHeaders);
+    var restTemplate = new RestTemplate();
+    ResponseEntity<KeycloakUser> response =
+        restTemplate.exchange(
+            usersWithIdUrl, HttpMethod.GET, requestEntity, KeycloakUser.class, new Object[] {});
+    if (isNull(response.getBody())) {
+      log.warn("No user found in keycloak with id {}", usersWithIdUrl);
+      return Optional.empty();
+    }
+    return Optional.of(response.getBody());
+  }
+
+  public void updateUserCustomAttribute(
+      String customAttribute, Long attributeValue, String userId) {
+
+    var httpHeaders = new HttpHeaders();
+    httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+    KeycloakLoginResponseDTO loginResponse = keycloakLoginService.loginAdminUser();
+    httpHeaders.setBearerAuth(loginResponse.getAccessToken());
+    getUsersWithUserId(userId, httpHeaders)
+        .ifPresent(
+            user ->
+                updateCustomKeycloakAttribute(customAttribute, attributeValue, httpHeaders, user));
+  }
+
+  private Optional<String> updateCustomKeycloakAttribute(
+      String customAttribute,
+      Long customAttributeValue,
+      HttpHeaders httpHeaders,
+      KeycloakUser user) {
+    var updateUserUrl =
+        keycloakConfig.getAuthServerUrl()
+            + ADMIN_REALMS
+            + keycloakConfig.getRealm()
+            + "/users/"
+            + user.getId();
+
+    Map<String, Object> attributes = (Map<String, Object>) user.getAttributes();
+    attributes.put(customAttribute, customAttributeValue);
+    try {
+      new RestTemplate()
+          .exchange(updateUserUrl, HttpMethod.PUT, new HttpEntity<>(user, httpHeaders), Void.class);
+    } catch (Exception e) {
+      log.error(
+          "Error while adding custom attribute {} = {}, to user {}",
+          customAttribute,
+          customAttributeValue,
+          user.getUsername());
+      return Optional.empty();
+    }
+    log.info(
+        "Updated keycloak attribute {} = {}, of user {}",
+        customAttribute,
+        customAttributeValue,
+        user.getUsername());
+    return Optional.of(user.getId());
   }
 
   public void createUser(final String userName, String password, String email, Long tenantId) {
