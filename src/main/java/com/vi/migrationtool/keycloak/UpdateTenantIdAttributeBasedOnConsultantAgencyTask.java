@@ -31,9 +31,7 @@ public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends Migratio
             "select distinct ca.consultant_id, a.tenant_id as 'target_tenant'\n"
                 + "from consultant_agency ca \n"
                 + "inner join agencyservice.agency a on ca.agency_id = a.id\n"
-                + "where (ca.tenant_id <> a.tenant_id or ca.tenant_id is null)\n"
-                // TODO remove this condition after test
-                + "and ca.consultant_id = 'f9c72af0-8374-472b-91d8-5745f02b0d06'",
+                + "where (ca.tenant_id <> a.tenant_id or ca.tenant_id is null)\n",
             (rs, rowNum) -> {
               String consultantId = rs.getString("consultant_id");
               Long targetTenant = rs.getLong("target_tenant");
@@ -49,9 +47,7 @@ public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends Migratio
                 + "from session s \n"
                 + "inner join user u on s.user_id = u.user_id\n"
                 + "inner join agencyservice.agency a on s.agency_id = a.id\n"
-                + "where (u.tenant_id <> s.tenant_id or s.tenant_id is null)\n"
-                // TODO remove this condition after test
-                + "and u.user_id = '9de17c90-9746-4e52-aa37-2d113aba3909'",
+                + "where (u.tenant_id <> s.tenant_id or s.tenant_id is null)\n",
             (rs, rowNum) -> {
               String userId = rs.getString("user_id");
               Long targetTenant = rs.getLong("target_tenant");
