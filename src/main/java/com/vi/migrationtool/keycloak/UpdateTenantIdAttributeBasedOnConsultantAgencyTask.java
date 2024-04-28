@@ -53,10 +53,10 @@ public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends Migratio
                 // TODO remove this condition after test
                 + "and u.user_id = '9de17c90-9746-4e52-aa37-2d113aba3909'",
             (rs, rowNum) -> {
-              String consultantId = rs.getString("consultant_id");
+              String userId = rs.getString("user_id");
               Long targetTenant = rs.getLong("target_tenant");
 
-              return new UserTenant(consultantId, targetTenant);
+              return new UserTenant(userId, targetTenant);
             });
 
     adviceSeekerTargetTenants.stream()
