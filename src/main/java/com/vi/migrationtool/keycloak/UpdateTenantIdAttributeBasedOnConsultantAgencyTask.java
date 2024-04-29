@@ -47,7 +47,7 @@ public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends Migratio
                 + "from session s \n"
                 + "inner join user u on s.user_id = u.user_id\n"
                 + "inner join agencyservice.agency a on s.agency_id = a.id\n"
-                + "where (u.tenant_id <> s.tenant_id or s.tenant_id is null)\n",
+                + "where (u.tenant_id <> a.tenant_id or s.tenant_id is null)\n",
             (rs, rowNum) -> {
               String userId = rs.getString("user_id");
               Long targetTenant = rs.getLong("target_tenant");
