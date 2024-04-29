@@ -25,4 +25,5 @@
     <include file="migrations/changeset/0021_add_custom_keycloak_attribute_to_users_with_role/0021_add_custom_keycloak_attribute_to_users_with_role.xml"/>
     <include file="migrations/changeset/0023_create_jitsi_technical_user/0023_create_jitsi_technical_user.xml"/>
     <include file="migrations/changeset/0024_create_weblate_project/0024_create_weblate_project.xml"/>
+    <include file="migrations/changeset/0028_fix_consultant_and_user_tenant_id_in_keycloak_based_on_consultant_agency_tenant_id/0028_fix_consultant_and_user_tenant_id_in_keycloak_based_on_consultant_agency_tenant_id.xml"/>
 </databaseChangeLog>
