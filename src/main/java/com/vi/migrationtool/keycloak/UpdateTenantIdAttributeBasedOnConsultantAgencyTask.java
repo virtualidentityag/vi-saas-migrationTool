@@ -59,8 +59,7 @@ public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends Migratio
         .forEach(
             adviceSeekerTenant -> {
               log.info(
-                  "Attempt to set tenantId for adviceseeker with id {} to {}",
-                  "advice seeker",
+                  "Attempt to set tenantId for adviceseeker with id  {} to {}",
                   adviceSeekerTenant.getUserId(),
                   adviceSeekerTenant.getTenantId());
 
