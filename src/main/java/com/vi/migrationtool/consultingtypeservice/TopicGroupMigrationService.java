@@ -34,7 +34,7 @@ public class TopicGroupMigrationService {
       log.info("Topic group inserted: " + groupName);
       return Optional.of(consultingTypeJdbcTemplate.queryForObject(idQuery, Integer.class));
     } else {
-      String sql = "SELECT topic_group_id FROM topic_group WHERE name = ?";
+      String sql = "SELECT id FROM topic_group WHERE name = ?";
       Integer id = consultingTypeJdbcTemplate.queryForObject(sql, Integer.class, groupName);
       return Optional.of(id);
     }
