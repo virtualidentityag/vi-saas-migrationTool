@@ -100,7 +100,8 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
     topicGroups.forEach(
         topicGroup ->
             topicGroupMigrationService
-                .insertTopicGroupIfNotExistsOrReturnExistingTopicGroup(convertToTranslateableJson(topicGroup))
+                .insertTopicGroupIfNotExistsOrReturnExistingTopicGroup(
+                    convertToTranslateableJson(topicGroup))
                 .ifPresent(
                     topicGroupId ->
                         topicGroupMigrationService.createTopicGroupRelationIfNotExists(
