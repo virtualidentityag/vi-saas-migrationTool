@@ -16,7 +16,7 @@ public class TopicGroupMigrationService {
       "INSERT INTO topic_group (id, name) VALUES (NEXT VALUE FOR sequence_topic_group, ?)";
   private JdbcTemplate consultingTypeJdbcTemplate;
 
-  public Optional<Integer> insertTopicGroupIfNotExists(String groupName) {
+  public Optional<Integer> insertTopicGroupIfNotExistsOrReturnExistingTopicGroup(String groupName) {
     if (groupName == null) {
       log.info("Could not migrate topic with group null");
       return Optional.empty();
@@ -34,7 +34,9 @@ public class TopicGroupMigrationService {
       log.info("Topic group inserted: " + groupName);
       return Optional.of(consultingTypeJdbcTemplate.queryForObject(idQuery, Integer.class));
     } else {
-      return Optional.empty();
+      String sql = "SELECT topic_group_id FROM topic_group WHERE name = ?";
+      Integer id = consultingTypeJdbcTemplate.queryForObject(sql, Integer.class, groupName);
+      return Optional.of(id);
     }
   }
 

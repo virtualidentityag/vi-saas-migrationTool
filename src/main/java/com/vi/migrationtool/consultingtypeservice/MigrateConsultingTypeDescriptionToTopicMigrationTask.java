@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @Slf4j
 public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends MigrationTasks {
 
+  private static final String DE_JSON = "{ \"de\": \"";
   private final JdbcTemplate consultingTypeServiceJdbcTemplate;
   private final JdbcTemplate agencyServiceJdbcTemplate;
   private final TopicGroupMigrationService topicGroupMigrationService;
@@ -65,8 +66,8 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
                     new Object[] {
                       ct.getId(),
                       ct.getTenantId(),
-                      "{ \"de\": \"" + ct.getTitles().getShort() + "\"}",
-                      "{ \"de\": \"" + ct.getDescription() + "\"}",
+                      DE_JSON + ct.getTitles().getShort() + "\"}",
+                      DE_JSON + ct.getDescription() + "\"}",
                       "ACTIVE",
                       formattedCurrentDateTime,
                       formattedCurrentDateTime,
@@ -74,8 +75,8 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
                       null,
                       ct.getUrls() != null ? ct.getUrls().getRegistrationPostcodeFallbackUrl() : "",
                       ct.getSendFurtherStepsMessage(),
-                      "{ \"de\": \"" + ct.getTitles().getShort() + "\"}",
-                      "{ \"de\": \"" + ct.getTitles().getLong() + "\"}",
+                      DE_JSON + ct.getTitles().getShort() + "\"}",
+                      DE_JSON + ct.getTitles().getLong() + "\"}",
                       ct.getTitles().getWelcome(),
                       ct.getTitles().getRegistrationDropdown(),
                       ct.getSlug()
@@ -99,7 +100,7 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
     topicGroups.forEach(
         topicGroup ->
             topicGroupMigrationService
-                .insertTopicGroupIfNotExists(convertToTranslateableJson(topicGroup))
+                .insertTopicGroupIfNotExistsOrReturnExistingTopicGroup(convertToTranslateableJson(topicGroup))
                 .ifPresent(
                     topicGroupId ->
                         topicGroupMigrationService.createTopicGroupRelationIfNotExists(
@@ -107,6 +108,6 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
   }
 
   private String convertToTranslateableJson(String topicGroup) {
-    return "{ \"de\": \"" + topicGroup + "\"}";
+    return DE_JSON + topicGroup + "\"}";
   }
 }
