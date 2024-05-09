@@ -61,6 +61,7 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
             + "titles_welcome, titles_dropdown, slug) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         consultingTypes.stream()
             .filter(ct -> !topicExistsById(consultingTypeServiceJdbcTemplate, ct.getId()))
+            .filter(ct -> ct.getTitles() != null)
             .map(
                 ct ->
                     new Object[] {
