@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @Slf4j
 public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends MigrationTasks {
 
+  private static final String DE_JSON = "{ \"de\": \"";
   private final JdbcTemplate consultingTypeServiceJdbcTemplate;
   private final JdbcTemplate agencyServiceJdbcTemplate;
   private final TopicGroupMigrationService topicGroupMigrationService;
@@ -56,16 +57,18 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
     // Format the current date and time
     String formattedCurrentDateTime = currentDateTime.format(formatter);
     consultingTypeServiceJdbcTemplate.batchUpdate(
-        "insert into topic (id, tenant_id, name, description, status, create_date, update_date, internal_identifier, fallback_agency_id, fallback_url, send_next_step_message, titles_short, titles_long, titles_welcome, titles_dropdown, slug) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        "insert into topic (id, tenant_id, name, description, status, create_date, update_date, internal_identifier, fallback_agency_id, fallback_url, send_next_step_message, titles_short, titles_long, "
+            + "titles_welcome, titles_dropdown, slug) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         consultingTypes.stream()
             .filter(ct -> !topicExistsById(consultingTypeServiceJdbcTemplate, ct.getId()))
+            .filter(ct -> ct.getTitles() != null)
             .map(
                 ct ->
                     new Object[] {
                       ct.getId(),
                       ct.getTenantId(),
-                      "{ \"de\": \"" + ct.getTitles().getShort() + "\"}",
-                      "{ \"de\": \"" + ct.getDescription() + "\"}",
+                      DE_JSON + ct.getTitles().getShort() + "\"}",
+                      DE_JSON + ct.getDescription() + "\"}",
                       "ACTIVE",
                       formattedCurrentDateTime,
                       formattedCurrentDateTime,
@@ -73,8 +76,8 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
                       null,
                       ct.getUrls() != null ? ct.getUrls().getRegistrationPostcodeFallbackUrl() : "",
                       ct.getSendFurtherStepsMessage(),
-                      ct.getTitles().getShort(),
-                      ct.getTitles().getLong(),
+                      DE_JSON + ct.getTitles().getShort() + "\"}",
+                      DE_JSON + ct.getTitles().getLong() + "\"}",
                       ct.getTitles().getWelcome(),
                       ct.getTitles().getRegistrationDropdown(),
                       ct.getSlug()
@@ -94,13 +97,19 @@ public class MigrateConsultingTypeDescriptionToTopicMigrationTask extends Migrat
 
   private void addTopicGroupIfNeeded(ConsultingTypeEntity consultingTypeEntity) {
     var topicGroups = consultingTypeEntity.getGroups();
+
     topicGroups.forEach(
         topicGroup ->
             topicGroupMigrationService
-                .insertTopicGroupIfNotExists(topicGroup)
+                .insertTopicGroupIfNotExistsOrReturnExistingTopicGroup(
+                    convertToTranslateableJson(topicGroup))
                 .ifPresent(
                     topicGroupId ->
                         topicGroupMigrationService.createTopicGroupRelationIfNotExists(
                             topicGroupId, consultingTypeEntity.getId())));
+  }
+
+  private String convertToTranslateableJson(String topicGroup) {
+    return DE_JSON + topicGroup + "\"}";
   }
 }

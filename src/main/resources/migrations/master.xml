@@ -32,4 +32,6 @@
     <!-- by default migration 0025_fix_rocketchat_user_id_inconsistency is not applied. This must be decided by each of the clients and activated if needed -->
 
     <!-- by default migration 0026_deactivate_legal_content_changes_by_single_tenant_admin_allowed is not applied. This must be decided by each of the clients and activated if needed -->
+    <!-- by default migration 0027_enable_central_data_protection_toggle/0027_enable_central_data_protection_toggle is not applied. This must be decided by each of the clients and activated if needed -->
+    <!-- by default migration 0028_fix_consultant_and_user_tenant_id_in_keycloak_based_on_consultant_agency_tenant_id is not applied. This must be decided by each of the clients and activated if needed -->
     </databaseChangeLog>

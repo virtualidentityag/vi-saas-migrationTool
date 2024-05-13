@@ -3,7 +3,6 @@ package com.vi.migrationtool.tenantservice;
 import com.vi.migrationtool.common.MigrationTasks;
 import com.vi.migrationtool.config.BeanAwareSpringLiquibase;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import liquibase.database.Database;
 import lombok.Builder;
@@ -76,12 +75,9 @@ public class ImportTenantsFromDiocesesMigrationTask extends MigrationTasks {
             "select id, name from tenant",
             (rs, rowNum) -> new TenantIdAndName(rs.getInt("id"), rs.getString("name")));
 
-    Predicate<Diocese> newTenantsOnly =
-        d -> tenants.stream().noneMatch(tenant -> tenant.name.equals(d.name));
     agencyJdbcTemplate.batchUpdate(
         "update agency set tenant_id = ? where diocese_id = ?",
         dioceses.stream()
-            .filter(newTenantsOnly)
             .map(
                 d ->
                     new Object[] {
@@ -119,7 +115,7 @@ public class ImportTenantsFromDiocesesMigrationTask extends MigrationTasks {
 
   private List<Diocese> getAllDiocesesFromAgencyDB(JdbcTemplate agencyJdbcTemplate) {
     return agencyJdbcTemplate.query(
-        "select name id, from " + dioceseTableName,
+        "select name, id from " + dioceseTableName,
         (rs, rowNum) -> new Diocese(rs.getInt("id"), rs.getString("name")));
   }
 
