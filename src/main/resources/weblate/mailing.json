@@ -5,7 +5,7 @@
   "name": "mailing",
   "slug": "mailing",
   "repo": "https://github.com/virtualidentityag/vi-saas-mailService.git",
-  "template": "src/main/resources/i18n/mailservice.en.json",
+  "template": "src/main/resources/i18n/mailing.en.json",
   "new_base": "",
   "vcs": "git",
   "manage_units": true,
