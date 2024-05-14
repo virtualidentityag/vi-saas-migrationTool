@@ -6,6 +6,8 @@ import java.util.List;
 import liquibase.database.Database;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @Data
@@ -13,11 +15,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends MigrationTasks {
 
   private static final String SPLIT_CHAR = ",";
+  private static final int USER_PAGE_SIZE = 300;
 
   private Long tenantId;
 
   private String roleNames;
   private JdbcTemplate userServiceJdbcTemplate;
+
+  private KeycloakLoginService keycloakLoginService;
 
   @Override
   public void execute(Database database) {
@@ -25,6 +30,9 @@ public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends Migratio
         BeanAwareSpringLiquibase.getBean(KeycloakUserService.class);
     this.userServiceJdbcTemplate =
         BeanAwareSpringLiquibase.getNamedBean("userServiceJdbcTemplate", JdbcTemplate.class);
+
+    this.keycloakLoginService =
+        BeanAwareSpringLiquibase.getNamedBean("keycloakLoginService", KeycloakLoginService.class);
 
     List<UserTenant> consultantTargetTenants =
         userServiceJdbcTemplate.query(
@@ -39,7 +47,7 @@ public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends Migratio
               return new UserTenant(consultantId, targetTenant);
             });
 
-    updateConsultantTenant(keycloakUserService, consultantTargetTenants);
+    updateConsultantsTenant(keycloakUserService, consultantTargetTenants);
 
     List<UserTenant> adviceSeekerTargetTenants =
         userServiceJdbcTemplate.query(
@@ -55,69 +63,101 @@ public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends Migratio
               return new UserTenant(userId, targetTenant);
             });
 
-    adviceSeekerTargetTenants.stream()
-        .forEach(
-            adviceSeekerTenant -> {
-              log.info(
-                  "Attempt to set tenantId for adviceseeker with id  {} to {}",
-                  adviceSeekerTenant.getUserId(),
-                  adviceSeekerTenant.getTenantId());
-
-              keycloakUserService.updateUserCustomAttribute(
-                  "tenantId", adviceSeekerTenant.getTenantId(), adviceSeekerTenant.getUserId());
-
-              userServiceJdbcTemplate.update(
-                  "UPDATE user SET tenant_id = ? WHERE user_id = ?",
-                  adviceSeekerTenant.getTenantId(),
-                  adviceSeekerTenant.getUserId());
-
-              userServiceJdbcTemplate.update(
-                  "UPDATE session SET tenant_id = ? WHERE user_id = ?",
-                  adviceSeekerTenant.getTenantId(),
-                  adviceSeekerTenant.getUserId());
-
-              log.info(
-                  "Successfully set tenantId for {} with id {} to {}",
-                  "advice seeker, user and keycloak user",
-                  adviceSeekerTenant.getUserId(),
-                  adviceSeekerTenant.getTenantId());
-            });
+    updateAdviceSeekersTenant(keycloakUserService, adviceSeekerTargetTenants);
   }
 
-  private void updateConsultantTenant(
+  private void updateAdviceSeekersTenant(
+      KeycloakUserService keycloakUserService, List<UserTenant> adviceSeekerTargetTenants) {
+    var httpHeaders = authenticateInKeycloak();
+    if (adviceSeekerTargetTenants.isEmpty()) {
+      log.info("No advice seeker found with different tenantId");
+      return;
+    }
+    for (int i = 0; i < adviceSeekerTargetTenants.size(); i++) {
+      var adviceSeekerTenant = adviceSeekerTargetTenants.get(i);
+      if (i % USER_PAGE_SIZE == 0) {
+        httpHeaders = authenticateInKeycloak();
+      }
+      log.info(
+          "Attempt to set tenantId for adviceseeker with id  {} to {}",
+          adviceSeekerTenant.getUserId(),
+          adviceSeekerTenant.getTenantId());
+
+      keycloakUserService.updateUserCustomAttributeWithoutLogin(
+          "tenantId",
+          adviceSeekerTenant.getTenantId(),
+          adviceSeekerTenant.getUserId(),
+          httpHeaders);
+
+      userServiceJdbcTemplate.update(
+          "UPDATE user SET tenant_id = ? WHERE user_id = ?",
+          adviceSeekerTenant.getTenantId(),
+          adviceSeekerTenant.getUserId());
+
+      userServiceJdbcTemplate.update(
+          "UPDATE session SET tenant_id = ? WHERE user_id = ?",
+          adviceSeekerTenant.getTenantId(),
+          adviceSeekerTenant.getUserId());
+
+      log.info(
+          "Successfully set tenantId for {} with id {} to {}",
+          "advice seeker, user and keycloak user",
+          adviceSeekerTenant.getUserId(),
+          adviceSeekerTenant.getTenantId());
+    }
+  }
+
+  private HttpHeaders authenticateInKeycloak() {
+    var httpHeaders = new HttpHeaders();
+    httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+    KeycloakLoginResponseDTO loginResponse = keycloakLoginService.loginAdminUser();
+    httpHeaders.setBearerAuth(loginResponse.getAccessToken());
+    return httpHeaders;
+  }
+
+  private void updateConsultantsTenant(
       KeycloakUserService keycloakUserService, List<UserTenant> consultantTargetTenants) {
-    consultantTargetTenants.stream()
-        .forEach(
-            consultantTenant -> {
-              log.info(
-                  "Attempt to set tenantId for {} with id {} to {}",
-                  "consultant",
-                  consultantTenant.getUserId(),
-                  consultantTenant.getTenantId());
 
-              keycloakUserService.updateUserCustomAttribute(
-                  "tenantId", consultantTenant.getTenantId(), consultantTenant.getUserId());
+    if (consultantTargetTenants.isEmpty()) {
+      log.info("No consultant found with different tenantId");
+      return;
+    }
+    var httpHeaders = authenticateInKeycloak();
+    for (int i = 0; i < consultantTargetTenants.size(); i++) {
+      if (i % USER_PAGE_SIZE == 0) {
+        httpHeaders = authenticateInKeycloak();
+      }
+      var consultantTenant = consultantTargetTenants.get(i);
 
-              userServiceJdbcTemplate.update(
-                  "UPDATE consultant_agency SET tenant_id = ? WHERE consultant_id = ?",
-                  consultantTenant.getTenantId(),
-                  consultantTenant.getUserId());
+      log.info(
+          "Attempt to set tenantId for {} with id {} to {}",
+          "consultant",
+          consultantTenant.getUserId(),
+          consultantTenant.getTenantId());
 
-              userServiceJdbcTemplate.update(
-                  "UPDATE consultant SET tenant_id = ? WHERE consultant_id = ?",
-                  consultantTenant.getTenantId(),
-                  consultantTenant.getUserId());
+      keycloakUserService.updateUserCustomAttributeWithoutLogin(
+          "tenantId", consultantTenant.getTenantId(), consultantTenant.getUserId(), httpHeaders);
 
-              userServiceJdbcTemplate.update(
-                  "UPDATE session SET tenant_id = ? WHERE consultant_id = ?",
-                  consultantTenant.getTenantId(),
-                  consultantTenant.getUserId());
+      userServiceJdbcTemplate.update(
+          "UPDATE consultant_agency SET tenant_id = ? WHERE consultant_id = ?",
+          consultantTenant.getTenantId(),
+          consultantTenant.getUserId());
 
-              log.info(
-                  "Successfully set tenantId for {} with id {} to {}",
-                  "consultant, consultant_agency, session and keycloak user",
-                  consultantTenant.getUserId(),
-                  consultantTenant.getTenantId());
-            });
+      userServiceJdbcTemplate.update(
+          "UPDATE consultant SET tenant_id = ? WHERE consultant_id = ?",
+          consultantTenant.getTenantId(),
+          consultantTenant.getUserId());
+
+      userServiceJdbcTemplate.update(
+          "UPDATE session SET tenant_id = ? WHERE consultant_id = ?",
+          consultantTenant.getTenantId(),
+          consultantTenant.getUserId());
+
+      log.info(
+          "Successfully set tenantId for {} with id {} to {}",
+          "consultant, consultant_agency, session and keycloak user",
+          consultantTenant.getUserId(),
+          consultantTenant.getTenantId());
+    }
   }
 }
