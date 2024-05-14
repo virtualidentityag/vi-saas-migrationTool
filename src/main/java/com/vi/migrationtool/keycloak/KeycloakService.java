@@ -346,7 +346,7 @@ public class KeycloakService {
       HttpHeaders httpHeaders,
       RestTemplate restTemplate,
       KeycloakUser user) {
-    var updateUserRolesUrl =
+    var updateUserUrl =
         keycloakConfig.getAuthServerUrl()
             + ADMIN_REALMS
             + keycloakConfig.getRealm()
@@ -364,7 +364,7 @@ public class KeycloakService {
     attributes.put(customAttribute, customAttributeValue);
     try {
       restTemplate.exchange(
-          updateUserRolesUrl, HttpMethod.PUT, new HttpEntity<>(user, httpHeaders), Void.class);
+          updateUserUrl, HttpMethod.PUT, new HttpEntity<>(user, httpHeaders), Void.class);
     } catch (Exception e) {
       log.error(
           "Error while adding custom attribute {} = {}, to user {}",
