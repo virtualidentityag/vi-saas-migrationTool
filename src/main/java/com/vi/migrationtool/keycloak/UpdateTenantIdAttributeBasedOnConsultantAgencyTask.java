@@ -63,6 +63,9 @@ public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends Migratio
                   adviceSeekerTenant.getUserId(),
                   adviceSeekerTenant.getTenantId());
 
+              keycloakUserService.updateUserCustomAttribute(
+                  "tenantId", adviceSeekerTenant.getTenantId(), adviceSeekerTenant.getUserId());
+
               userServiceJdbcTemplate.update(
                   "UPDATE user SET tenant_id = ? WHERE user_id = ?",
                   adviceSeekerTenant.getTenantId(),
@@ -73,8 +76,6 @@ public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends Migratio
                   adviceSeekerTenant.getTenantId(),
                   adviceSeekerTenant.getUserId());
 
-              keycloakUserService.updateUserCustomAttribute(
-                  "tenantId", adviceSeekerTenant.getTenantId(), adviceSeekerTenant.getUserId());
 
               log.info(
                   "Successfully set tenantId for {} with id {} to {}",
@@ -95,6 +96,9 @@ public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends Migratio
                   consultantTenant.getUserId(),
                   consultantTenant.getTenantId());
 
+              keycloakUserService.updateUserCustomAttribute(
+                  "tenantId", consultantTenant.getTenantId(), consultantTenant.getUserId());
+
               userServiceJdbcTemplate.update(
                   "UPDATE consultant_agency SET tenant_id = ? WHERE consultant_id = ?",
                   consultantTenant.getTenantId(),
@@ -109,9 +113,6 @@ public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends Migratio
                   "UPDATE session SET tenant_id = ? WHERE consultant_id = ?",
                   consultantTenant.getTenantId(),
                   consultantTenant.getUserId());
-
-              keycloakUserService.updateUserCustomAttribute(
-                  "tenantId", consultantTenant.getTenantId(), consultantTenant.getUserId());
 
               log.info(
                   "Successfully set tenantId for {} with id {} to {}",
