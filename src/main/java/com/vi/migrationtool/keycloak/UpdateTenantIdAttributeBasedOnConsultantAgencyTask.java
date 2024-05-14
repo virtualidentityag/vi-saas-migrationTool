@@ -76,7 +76,6 @@ public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends Migratio
                   adviceSeekerTenant.getTenantId(),
                   adviceSeekerTenant.getUserId());
 
-
               log.info(
                   "Successfully set tenantId for {} with id {} to {}",
                   "advice seeker, user and keycloak user",
