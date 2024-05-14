@@ -296,8 +296,6 @@ public class KeycloakService {
 
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-    KeycloakLoginResponseDTO loginResponse = keycloakLoginService.loginAdminUser();
-    httpHeaders.setBearerAuth(loginResponse.getAccessToken());
 
     Optional<RoleRepresentation> role = getRoleBy(roleName, httpHeaders);
     if (role.isEmpty()) {
@@ -311,6 +309,8 @@ public class KeycloakService {
     var pageNumber = 1;
     var users = getUsersWithRoleName(roleName, getFirstElementIndex(pageNumber));
     while (!users.isEmpty()) {
+      KeycloakLoginResponseDTO loginResponse = keycloakLoginService.loginAdminUser();
+      httpHeaders.setBearerAuth(loginResponse.getAccessToken());
       var migratedUsersPage =
           addCustomAttributeToUsers(customAttribute, value, httpHeaders, restTemplate, users);
       pageNumber++;
