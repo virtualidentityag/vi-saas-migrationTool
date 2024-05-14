@@ -69,6 +69,10 @@ public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends Migratio
   private void updateAdviceSeekersTenant(
       KeycloakUserService keycloakUserService, List<UserTenant> adviceSeekerTargetTenants) {
     var httpHeaders = authenticateInKeycloak();
+    if (adviceSeekerTargetTenants.isEmpty()) {
+      log.info("No advice seeker found with different tenantId");
+      return;
+    }
     for (int i = 0; i < adviceSeekerTargetTenants.size(); i++) {
       var adviceSeekerTenant = adviceSeekerTargetTenants.get(i);
       if (i % USER_PAGE_SIZE == 0) {
