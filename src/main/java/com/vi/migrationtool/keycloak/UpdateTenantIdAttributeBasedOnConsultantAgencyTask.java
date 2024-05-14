@@ -63,6 +63,9 @@ public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends Migratio
                   adviceSeekerTenant.getUserId(),
                   adviceSeekerTenant.getTenantId());
 
+              keycloakUserService.updateUserCustomAttribute(
+                  "tenantId", adviceSeekerTenant.getTenantId(), adviceSeekerTenant.getUserId());
+
               userServiceJdbcTemplate.update(
                   "UPDATE user SET tenant_id = ? WHERE user_id = ?",
                   adviceSeekerTenant.getTenantId(),
@@ -73,8 +76,6 @@ public class UpdateTenantIdAttributeBasedOnConsultantAgencyTask extends Migratio
                   adviceSeekerTenant.getTenantId(),
                   adviceSeekerTenant.getUserId());
 
-              keycloakUserService.updateUserCustomAttribute(
-                  "tenantId", adviceSeekerTenant.getTenantId(), adviceSeekerTenant.getUserId());
 
               log.info(
                   "Successfully set tenantId for {} with id {} to {}",
