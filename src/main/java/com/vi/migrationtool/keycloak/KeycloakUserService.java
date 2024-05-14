@@ -118,6 +118,15 @@ public class KeycloakUserService {
                 updateCustomKeycloakAttribute(customAttribute, attributeValue, httpHeaders, user));
   }
 
+  public void updateUserCustomAttributeWithoutLogin(
+      String customAttribute, Long attributeValue, String userId, HttpHeaders httpHeaders) {
+
+    getUsersWithUserId(userId, httpHeaders)
+        .ifPresent(
+            user ->
+                updateCustomKeycloakAttribute(customAttribute, attributeValue, httpHeaders, user));
+  }
+
   private Optional<String> updateCustomKeycloakAttribute(
       String customAttribute,
       Long customAttributeValue,
