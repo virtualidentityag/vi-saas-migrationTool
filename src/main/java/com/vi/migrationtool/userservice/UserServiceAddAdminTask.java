@@ -46,8 +46,8 @@ public class UserServiceAddAdminTask extends MigrationTasks {
     var result =
         jdbcTemplate.query(
             sql,
-            new Object[] {id},
-            (RowMapper<Object>) (resultSet, i) -> resultSet.getString("admin_id"));
+            (RowMapper<Object>) (resultSet, i) -> resultSet.getString("admin_id"),
+            new Object[] {id});
 
     return result == null || result.isEmpty();
   }

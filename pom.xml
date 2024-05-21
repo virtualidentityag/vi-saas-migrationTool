@@ -16,7 +16,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.12.RELEASE</version>
+		<version>2.7.18</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -41,15 +41,15 @@
 		<commons-validator.version>1.7</commons-validator.version>
 		<liquibase-maven-plugin.version>4.8.0</liquibase-maven-plugin.version>
 		<javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
-		<spring-boot-starter-web.version>2.6.6</spring-boot-starter-web.version>
-		<spring-security-core.version>5.7.5</spring-security-core.version>
-		<spring-beans.version>5.2.20.RELEASE</spring-beans.version>
-		<spring-webmvc.version>5.2.20.RELEASE</spring-webmvc.version>
-		<spring-core.version>5.2.20.RELEASE</spring-core.version>
+		<spring-boot-starter-web.version>2.7.18</spring-boot-starter-web.version>
+		<spring-security-core.version>5.7.12</spring-security-core.version>
+		<spring-beans.version>5.3.35</spring-beans.version>
+		<spring-webmvc.version>5.3.35</spring-webmvc.version>
+		<spring-core.version>5.3.35</spring-core.version>
 		<json-smart.version>2.4.7</json-smart.version>
-		<spring-context-support.version>5.3.23</spring-context-support.version>
+		<spring-context-support.version>5.3.35</spring-context-support.version>
 		<ehcache.version>2.10.9.2</ehcache.version>
-		<spring-boot-starter-data-mongodb.version>2.7.5</spring-boot-starter-data-mongodb.version>
+		<spring-boot-starter-data-mongodb.version>2.7.18</spring-boot-starter-data-mongodb.version>
 		<spring-data-mongodb.version>3.3.5</spring-data-mongodb.version>
 	</properties>
 
@@ -125,7 +125,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-search-orm</artifactId>
-			<version>5.11.10.Final</version>
+			<version>5.11.12.Final</version>
 		</dependency>
 
 		<!-- Swagger/OpenAPI dependencies -->
@@ -216,7 +216,6 @@
 		<dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
-			<version>4.8.0</version>
 		</dependency>
 
 		<!-- mongo dependencies -->
@@ -345,6 +344,12 @@
 			<groupId>org.powermock</groupId>
 			<scope>test</scope>
 			<version>${powermock.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<artifactId>powermock-api-mockito2</artifactId>
@@ -453,6 +458,24 @@
 				<configuration>
 					<propertyFile>src/main/resources/liquibase.properties</propertyFile>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.openrewrite.maven</groupId>
+				<artifactId>rewrite-maven-plugin</artifactId>
+				<version>5.30.0</version>
+				<configuration>
+					<activeRecipes>
+						<recipe>org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7</recipe>
+					</activeRecipes>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.openrewrite.recipe</groupId>
+						<artifactId>rewrite-spring</artifactId>
+						<version>5.9.0</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 
 			<!-- json-schema.org pojo generation -->
