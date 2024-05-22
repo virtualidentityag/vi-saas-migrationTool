@@ -15,7 +15,6 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -207,7 +206,7 @@ public class KeycloakUserService {
       body.put("value", password);
       body.put("temporary", false);
       return body.toString();
-    } catch (JSONException e) {
+    } catch (Exception e) {
       return null;
     }
   }
