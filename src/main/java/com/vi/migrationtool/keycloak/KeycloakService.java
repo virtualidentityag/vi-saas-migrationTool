@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.representations.idm.RoleRepresentation;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -264,7 +263,7 @@ public class KeycloakService {
       JSONObject body = new JSONObject();
       body.put("name", roleName);
       return body.toString();
-    } catch (JSONException e) {
+    } catch (Exception e) {
       return null;
     }
   }
