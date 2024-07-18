@@ -15,7 +15,8 @@ public class TenantUpdateService {
 
   private static final int USER_PAGE_SIZE = 300;
   private static final String TENANT_ID = "tenantId";
-  private static final String SUCCESSFULLY_SET_TENANT_ID_FOR_WITH_ID_TO = "Successfully set tenantId for {} with id {} to {}";
+  private static final String SUCCESSFULLY_SET_TENANT_ID_FOR_WITH_ID_TO =
+      "Successfully set tenantId for {} with id {} to {}";
 
   private final KeycloakUserService keycloakUserService;
 
@@ -48,10 +49,7 @@ public class TenantUpdateService {
           adviceSeekerTenant.getTenantId());
 
       keycloakUserService.updateUserCustomAttributeWithoutLogin(
-          TENANT_ID,
-          adviceSeekerTenant.getTenantId(),
-          adviceSeekerTenant.getUserId(),
-          httpHeaders);
+          TENANT_ID, adviceSeekerTenant.getTenantId(), adviceSeekerTenant.getUserId(), httpHeaders);
 
       updateTables(adviceSeekerTenant);
       log.info(

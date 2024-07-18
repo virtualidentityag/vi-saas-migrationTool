@@ -37,7 +37,6 @@ public class MergeTenantsMigrationTask extends MigrationTasks {
     var agencyServiceJdbcTemplate =
         BeanAwareSpringLiquibase.getNamedBean("agencyServiceJdbcTemplate", JdbcTemplate.class);
 
-
     this.keycloakLoginService =
         BeanAwareSpringLiquibase.getNamedBean("keycloakLoginService", KeycloakLoginService.class);
 
@@ -57,7 +56,8 @@ public class MergeTenantsMigrationTask extends MigrationTasks {
     performMigrations(migrations, tenantMigrationService);
   }
 
-  private void performMigrations(List<TenantMigrationConfiguration> migrations,
+  private void performMigrations(
+      List<TenantMigrationConfiguration> migrations,
       TenantMigrationService tenantMigrationService) {
     migrations.stream()
         .forEach(
