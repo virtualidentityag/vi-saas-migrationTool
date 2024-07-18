@@ -1,6 +1,5 @@
 package com.vi.migrationtool.tenantservice;
 
-import com.vi.migrationtool.keycloak.KeycloakUserService;
 import com.vi.migrationtool.keycloak.TenantUpdateService;
 import com.vi.migrationtool.keycloak.UserTenant;
 import java.util.List;
@@ -51,7 +50,6 @@ public class TenantMigrationService {
             migration.getSourceTenantId());
 
     log.info(UPDATED + updatedRows + " rows in agency postcode range tables");
-
   }
 
   private void updateUserServiceTenantId(TenantMigrationConfiguration migration) {
@@ -68,8 +66,11 @@ public class TenantMigrationService {
 
   private void updateUsersInKeycloakAndDatabase(TenantMigrationConfiguration migration) {
 
-    log.info("Step: attempt to find and update adviceseekers in keycloak and database. "
-        + SOURCE_TENANT_TARGET_TENANT, migration.getSourceTenantId(), migration.getTargetTenantId());
+    log.info(
+        "Step: attempt to find and update adviceseekers in keycloak and database. "
+            + SOURCE_TENANT_TARGET_TENANT,
+        migration.getSourceTenantId(),
+        migration.getTargetTenantId());
     List<UserTenant> adviceSeekerTargetTenants =
         userServiceJdbcTemplate.query(
             "select u.user_id \n"
@@ -83,9 +84,11 @@ public class TenantMigrationService {
 
     tenantUpdateService.updateAdviceSeekersTenant(adviceSeekerTargetTenants);
 
-
-    log.info("Step: attempt to find and update consultants in keycloak and database. "
-        + SOURCE_TENANT_TARGET_TENANT, migration.getSourceTenantId(), migration.getTargetTenantId());
+    log.info(
+        "Step: attempt to find and update consultants in keycloak and database. "
+            + SOURCE_TENANT_TARGET_TENANT,
+        migration.getSourceTenantId(),
+        migration.getTargetTenantId());
     List<UserTenant> consultantTargetTenants =
         userServiceJdbcTemplate.query(
             "select consultant_id \n"
@@ -99,8 +102,11 @@ public class TenantMigrationService {
 
     tenantUpdateService.updateConsultantsTenant(consultantTargetTenants);
 
-    log.info("Step: attempt to find and update admins in keycloak and database. "
-        + SOURCE_TENANT_TARGET_TENANT, migration.getSourceTenantId(), migration.getTargetTenantId());
+    log.info(
+        "Step: attempt to find and update admins in keycloak and database. "
+            + SOURCE_TENANT_TARGET_TENANT,
+        migration.getSourceTenantId(),
+        migration.getTargetTenantId());
     List<UserTenant> adminTargetTenants =
         userServiceJdbcTemplate.query(
             "select admin_id \n"
