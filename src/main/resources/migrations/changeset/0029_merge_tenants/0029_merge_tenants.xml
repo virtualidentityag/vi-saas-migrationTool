@@ -5,8 +5,7 @@
 
   <changeSet author="tkuzynow" id="mergeTenants">
     <customChange class="com.vi.migrationtool.tenantservice.MergeTenantsMigrationTask">
-      <param name="tenantMigrationConfiguration" value='[{"sourceTenantId" : 24, "targetTenantId": 2, "deleteSourceTenant": true},
-      {"sourceTenantId" : 4, "targetTenantId": 3, "deleteSourceTenant": true}]'/>
+      <param name="tenantMigrationConfiguration" value='[]'/>
 
     </customChange>
   </changeSet>
