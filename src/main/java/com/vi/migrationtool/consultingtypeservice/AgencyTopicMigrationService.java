@@ -43,7 +43,7 @@ public class AgencyTopicMigrationService {
   private List<Integer> findAllAgenciesForConsultingType(Integer consultingTypeId) {
     return agencyServiceJdbcTemplate.query(
         "SELECT id from agency WHERE consulting_type = ?",
-        new Object[] {consultingTypeId},
-        (RowMapper<Integer>) (resultSet, rowNum) -> resultSet.getInt("id"));
+        (RowMapper<Integer>) (resultSet, rowNum) -> resultSet.getInt("id"),
+        new Object[] {consultingTypeId});
   }
 }
