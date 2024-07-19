@@ -12,7 +12,7 @@
             {"sourceTenantId" : 73, "targetTenantId": 72, "deleteSourceTenant": true},
             {"sourceTenantId" : 75, "targetTenantId": 76, "deleteSourceTenant": true},
             {"sourceTenantId" : 89, "targetTenantId": 222, "deleteSourceTenant": true},
-            {"sourceTenantId" : 102, "targetTenantId": 222, "deleteSourceTenant": true},
+            {"sourceTenantId" : 102, "targetTenantId": 232, "deleteSourceTenant": true},
             {"sourceTenantId" : 104, "targetTenantId": 54, "deleteSourceTenant": true},
             {"sourceTenantId" : 105, "targetTenantId": 31, "deleteSourceTenant": true},
             {"sourceTenantId" : 107, "targetTenantId": 37, "deleteSourceTenant": true},
