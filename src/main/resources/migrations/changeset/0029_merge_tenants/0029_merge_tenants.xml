@@ -5,29 +5,30 @@
 
   <changeSet author="tkuzynow" id="mergeTenants">
     <customChange class="com.vi.migrationtool.tenantservice.MergeTenantsMigrationTask">
-      <param name="tenantMigrationConfiguration" value='[{"sourceTenantId" : 2, "targetTenantId": 99, "deleteSourceTenant": true},
-            {"sourceTenantId" : 62, "targetTenantId": 61, "deleteSourceTenant": true},
-            {"sourceTenantId" : 69, "targetTenantId": 187, "deleteSourceTenant": true},
-            {"sourceTenantId" : 74, "targetTenantId": 73, "deleteSourceTenant": true},
-            {"sourceTenantId" : 76, "targetTenantId": 77, "deleteSourceTenant": true},
-            {"sourceTenantId" : 90, "targetTenantId": 223, "deleteSourceTenant": true},
-            {"sourceTenantId" : 103, "targetTenantId": 223, "deleteSourceTenant": true},
-            {"sourceTenantId" : 105, "targetTenantId": 55, "deleteSourceTenant": true},
-            {"sourceTenantId" : 106, "targetTenantId": 32, "deleteSourceTenant": true},
-            {"sourceTenantId" : 108, "targetTenantId": 38, "deleteSourceTenant": true},
-            {"sourceTenantId" : 124, "targetTenantId": 97, "deleteSourceTenant": true},
-            {"sourceTenantId" : 126, "targetTenantId": 7, "deleteSourceTenant": true},
-            {"sourceTenantId" : 170, "targetTenantId": 127, "deleteSourceTenant": true},
-            {"sourceTenantId" : 174, "targetTenantId": 38, "deleteSourceTenant": true},
-            {"sourceTenantId" : 175, "targetTenantId": 161, "deleteSourceTenant": true},
-            {"sourceTenantId" : 207, "targetTenantId": 138, "deleteSourceTenant": true},
-            {"sourceTenantId" : 209, "targetTenantId": 213, "deleteSourceTenant": true},
-            {"sourceTenantId" : 210, "targetTenantId": 213, "deleteSourceTenant": true},
-            {"sourceTenantId" : 211, "targetTenantId": 213, "deleteSourceTenant": true},
-            {"sourceTenantId" : 212, "targetTenantId": 213, "deleteSourceTenant": true},
-            {"sourceTenantId" : 215, "targetTenantId": 75, "deleteSourceTenant": true},
-            {"sourceTenantId" : 228, "targetTenantId": 153, "deleteSourceTenant": true},
-            {"sourceTenantId" : 230, "targetTenantId": 141, "deleteSourceTenant": true}]'/>
+      <param name="tenantMigrationConfiguration" value='[
+      {"sourceTenantId" : 237, "targetTenantId": 98, "deleteSourceTenant": true},
+            {"sourceTenantId" : 61, "targetTenantId": 60, "deleteSourceTenant": true},
+            {"sourceTenantId" : 68, "targetTenantId": 186, "deleteSourceTenant": true},
+            {"sourceTenantId" : 73, "targetTenantId": 72, "deleteSourceTenant": true},
+            {"sourceTenantId" : 75, "targetTenantId": 76, "deleteSourceTenant": true},
+            {"sourceTenantId" : 89, "targetTenantId": 222, "deleteSourceTenant": true},
+            {"sourceTenantId" : 102, "targetTenantId": 222, "deleteSourceTenant": true},
+            {"sourceTenantId" : 104, "targetTenantId": 54, "deleteSourceTenant": true},
+            {"sourceTenantId" : 105, "targetTenantId": 31, "deleteSourceTenant": true},
+            {"sourceTenantId" : 107, "targetTenantId": 37, "deleteSourceTenant": true},
+            {"sourceTenantId" : 123, "targetTenantId": 96, "deleteSourceTenant": true},
+            {"sourceTenantId" : 125, "targetTenantId": 6, "deleteSourceTenant": true},
+            {"sourceTenantId" : 169, "targetTenantId": 126, "deleteSourceTenant": true},
+            {"sourceTenantId" : 173, "targetTenantId": 37, "deleteSourceTenant": true},
+            {"sourceTenantId" : 174, "targetTenantId": 160, "deleteSourceTenant": true},
+            {"sourceTenantId" : 206, "targetTenantId": 137, "deleteSourceTenant": true},
+            {"sourceTenantId" : 208, "targetTenantId": 212, "deleteSourceTenant": true},
+            {"sourceTenantId" : 209, "targetTenantId": 212, "deleteSourceTenant": true},
+            {"sourceTenantId" : 210, "targetTenantId": 212, "deleteSourceTenant": true},
+            {"sourceTenantId" : 211, "targetTenantId": 212, "deleteSourceTenant": true},
+            {"sourceTenantId" : 214, "targetTenantId": 74, "deleteSourceTenant": true},
+            {"sourceTenantId" : 227, "targetTenantId": 152, "deleteSourceTenant": true},
+            {"sourceTenantId" : 229, "targetTenantId": 140, "deleteSourceTenant": true}]'/>
     </customChange>
   </changeSet>
 </databaseChangeLog>
