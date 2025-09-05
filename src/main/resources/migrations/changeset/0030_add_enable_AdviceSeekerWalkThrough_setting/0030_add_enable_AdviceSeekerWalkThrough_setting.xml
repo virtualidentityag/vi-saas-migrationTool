@@ -1,0 +1,13 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+  <changeSet author="tkuzynow" id="add_documentation_enabled_applevel_setting">
+    <customChange class="com.vi.migrationtool.mongodb.AddDocumentationEnabledApplevelSettingMigrationTask">
+      <param name="initialValue" value='true'/>
+      <param name="readOnly" value='false'/>
+    </customChange>
+  </changeSet>
+
+</databaseChangeLog>
