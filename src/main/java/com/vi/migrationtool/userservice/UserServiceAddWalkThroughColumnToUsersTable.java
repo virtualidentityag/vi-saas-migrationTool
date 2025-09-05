@@ -24,7 +24,8 @@ public class UserServiceAddWalkThroughColumnToUsersTable extends MigrationTasks 
       log.info("Adding walk through column to users table");
 
       // Add the column with default value 1
-      String addColumnSql = "ALTER TABLE users ADD COLUMN walk_through_enabled TINYINT(4) DEFAULT 1";
+      String addColumnSql =
+          "ALTER TABLE users ADD COLUMN walk_through_enabled TINYINT(4) DEFAULT 1";
       jdbcTemplate.execute(addColumnSql);
       log.info("Successfully added walk through column to User's table");
 
