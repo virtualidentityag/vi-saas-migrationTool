@@ -37,7 +37,8 @@ public class AddEnableAdviceSeekerWalkThroughSettingMigrationTask extends Migrat
   private void applyMigration(
       ApplicationSettingService applicationSettingService,
       ApplicationSettingsEntity applicationSettingsEntity) {
-    EnableAdviceSeekerWalkThrough enableAdviceSeekerWalkThrough = new EnableAdviceSeekerWalkThrough();
+    EnableAdviceSeekerWalkThrough enableAdviceSeekerWalkThrough =
+        new EnableAdviceSeekerWalkThrough();
     enableAdviceSeekerWalkThrough.setValue(initialValue);
     enableAdviceSeekerWalkThrough.setReadOnly(readOnly);
     applicationSettingsEntity.setEnableAdviceSeekerWalkThrough(enableAdviceSeekerWalkThrough);
@@ -52,7 +53,8 @@ public class AddEnableAdviceSeekerWalkThroughSettingMigrationTask extends Migrat
     return !enableAdviceSeekerWalkThroughExists(applicationSettingsEntity);
   }
 
-  private boolean enableAdviceSeekerWalkThroughExists(ApplicationSettingsEntity applicationSettingsEntity) {
+  private boolean enableAdviceSeekerWalkThroughExists(
+      ApplicationSettingsEntity applicationSettingsEntity) {
     return applicationSettingsEntity.getEnableAdviceSeekerWalkThrough() != null
         && applicationSettingsEntity.getEnableAdviceSeekerWalkThrough().getValue() != null;
   }
