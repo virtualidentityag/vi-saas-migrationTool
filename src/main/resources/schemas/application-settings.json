@@ -84,6 +84,21 @@
         "readOnly"
       ]
     },
+    "enableAdviceSeekerWalkThrough": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "boolean"
+        },
+        "readOnly": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "value",
+        "readOnly"
+      ]
+    },
     "disableVideoAppointments": {
       "type": "object",
       "properties": {
