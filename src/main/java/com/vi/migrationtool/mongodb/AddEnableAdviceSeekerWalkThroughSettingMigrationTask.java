@@ -1,11 +1,12 @@
 package com.vi.migrationtool.mongodb;
 
+import static java.util.Objects.nonNull;
+
 import com.vi.migrationtool.common.MigrationTasks;
 import com.vi.migrationtool.config.BeanAwareSpringLiquibase;
 import com.vi.migrationtool.mongodb.model.ApplicationSettingsEntity;
 import com.vi.migrationtool.mongodb.service.ApplicationSettingService;
 import com.vi.migrationtool.schemas.model.EnableAdviceSeekerWalkThrough;
-import static java.util.Objects.nonNull;
 import liquibase.database.Database;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
