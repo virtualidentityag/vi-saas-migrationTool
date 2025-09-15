@@ -32,7 +32,7 @@ public class AddEnableAdviceSeekerWalkThroughSettingMigrationTask extends Migrat
       applyMigration(applicationSettingService, applicationSettingsEntity);
     } else {
       log.info(
-          "Skipping migration AddTenantAdminCanEditLegalTextsMigrationTask, LegalContentChangesBySingleTenantAdminsAllowed setting already exist.");
+          "Skipping migration AddEnableAdviceSeekerWalkThroughSettingMigrationTask setting already exist.");
     }
   }
 
